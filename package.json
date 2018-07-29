@@ -81,6 +81,7 @@
     "nodemon": "^1.17.5",
     "npm-merge-driver": "^2.3.5",
     "prettier": "1.11.1",
+    "pubnub": "^4.21.2",
     "react-test-renderer": "^16.0.0",
     "redux-devtools-extension": "^2.13.2",
     "redux-mock-store": "^1.2.3",

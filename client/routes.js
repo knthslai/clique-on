@@ -1,39 +1,61 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import {withRouter, Route, Switch} from 'react-router-dom'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter, Route, Switch } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import {Login, Signup, UserHome} from './components'
-import {me} from './store'
+// import { Login, Signup, UserHome } from './components'
+import { me } from './store'
+import PubNub from 'pubnub'
+const pubnubDemo = new PubNub({
+  publishKey: `pub-c-ec5be6a2-71b1-44d5-829f-a8695b472e37`,
+  subscribeKey: `sub-c-ba1d6808-8ea8-11e8-bdf5-3621de398238`
+})
+pubnubDemo.addListener({
+  message: function ({ message }) {
+    console.log(message)
+  }
+})
 
+pubnubDemo.subscribe({
+  channels: [`demo_tutorial`]
+});
 /**
  * COMPONENT
  */
 class Routes extends Component {
-  componentDidMount() {
-    this.props.loadInitialData()
+
+  handleClick = (evt) => {
+    pubnubDemo.publish({
+      message: {
+        "color": `blue`,
+        [evt.target.name]: evt.target.value
+      },
+      channel: `demo_tutorial`
+    });
   }
-
   render() {
-    const {isLoggedIn} = this.props
+    // const { isLoggedIn } = this.props
 
+    console.log(`hit`)
     return (
-      <Switch>
-        {/* Routes placed here are available to all visitors */}
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        {isLoggedIn && (
-          <Switch>
-            {/* Routes placed here are only available after logging in */}
-            <Route path="/home" component={UserHome} />
-          </Switch>
-        )}
-        {/* Displays our Login component as a fallback */}
-        <Route component={Login} />
-      </Switch>
+      <React.Fragment>
+        <input name='input' onClick={this.handleClick} />
+      </React.Fragment>
     )
   }
 }
-
+{/* <Switch> */ }
+// {/* Routes placed here are available to all visitors */}
+// <Route path="/login" component={Login} />
+// <Route path="/signup" component={Signup} />
+// {isLoggedIn && (
+//   <Switch>
+//     {/* Routes placed here are only available after logging in */}
+//     <Route path="/home" component={UserHome} />
+//   </Switch>
+// )}
+// {/* Displays our Login component as a fallback */}
+// <Route component={Login} />
+// </Switch>
 /**
  * CONTAINER
  */
