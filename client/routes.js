@@ -34,8 +34,6 @@ class Routes extends Component {
   }
   render() {
     // const { isLoggedIn } = this.props
-
-    console.log(`hit`)
     return (
       <React.Fragment>
         <input name='input' onClick={this.handleClick} />
