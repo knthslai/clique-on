@@ -1,14 +1,85 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width initial-scale=1.0'>
-    <title>Boilermaker</title>
-    <link rel="stylesheet" href="/style.css" />
-    <script defer src="/bundle.js"></script>
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
-</html>
 
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width initial-scale=1.0'>
+  <title>Clique.Me App - Kenneth Lai</title>
+  <!-- <link rel="stylesheet" href="/style.css" /> -->
+  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.19.0.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+  <script defer src="/bundle.js"></script>
+
+</head>
+
+
+<body>
+  <div class="container">
+    <h1>Clique.Me - Live Device Location</h1>
+    <div id="map-canvas" style="width:600px;height:400px"></div>
+  </div>
+
+  <script>
+    window.lat = 40.705;
+    window.lng = -74.009;
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(updatePosition);
+      }
+
+      return null;
+    };
+
+    function updatePosition(position) {
+      if (position) {
+        window.lat = position.coords.latitude;
+        window.lng = position.coords.longitude;
+      }
+    }
+
+    setInterval(function () { updatePosition(getLocation()); }, 10000);
+
+    function currentLocation() {
+      return { lat: window.lat, lng: window.lng };
+    };
+
+    var map;
+    var mark;
+
+    var initialize = function () {
+      map = new google.maps.Map(document.getElementById('map-canvas'), { center: { lat: lat, lng: lng }, zoom: 12 });
+      mark = new google.maps.Marker({ position: { lat: lat, lng: lng }, map: map });
+    };
+
+    window.initialize = initialize;
+
+    var redraw = function (payload) {
+      lat = payload.message.lat;
+      lng = payload.message.lng;
+
+      map.setCenter({ lat: lat, lng: lng, alt: 0 });
+      mark.setPosition({ lat: lat, lng: lng, alt: 0 });
+    };
+
+    var pnChannel = "FSADemo-knthslai";
+
+    var pubnub = new PubNub({
+      publishKey: `pub-c-ec5be6a2-71b1-44d5-829f-a8695b472e37`,
+      subscribeKey: `sub-c-ba1d6808-8ea8-11e8-bdf5-3621de398238`,
+      secretKey: `sec-c-YjhlMDJlYWMtM2FiNC00MDI5LTg4NDYtY2I0YmQ4YTllZjEz`
+    });
+
+    pubnub.subscribe({ channels: [pnChannel] });
+    pubnub.addListener({ message: redraw });
+
+    setInterval(function () {
+      pubnub.publish({ channel: pnChannel, message: currentLocation() });
+    }, 5000);
+  </script>
+  <div id="app"></div>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD7ySe59IiWc8F1hX6eL9vrGQz45Nqcuko&callback=initialize"></script>
+</body>
+
+</html>

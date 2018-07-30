@@ -2,38 +2,47 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter, Route, Switch } from 'react-router-dom'
 import PropTypes from 'prop-types'
+const key = require(`../secrets`)
 // import { Login, Signup, UserHome } from './components'
 import { me } from './store'
 import PubNub from 'pubnub'
-const pubnubDemo = new PubNub({
-  publishKey: `pub-c-ec5be6a2-71b1-44d5-829f-a8695b472e37`,
-  subscribeKey: `sub-c-ba1d6808-8ea8-11e8-bdf5-3621de398238`
+// import Maps from './map';
+const pubnub = new PubNub(key || {
+  publishKey: process.env.PUBNUB_PUB,
+  subscribeKey: process.env.PUBNUB_SUB,
+  secretKey: process.env.PUBNUB_SEC,
+
 })
-pubnubDemo.addListener({
-  message: function ({ message }) {
-    console.log(message)
+pubnub.addListener({
+  message: function (message) {
+    console.dir(message)
+    // const ipApi = await axios.get(`/http://ip-api.com/json/${ip}`)
+    // console.log('ipApi', ipApi);
+
   }
 })
-
-pubnubDemo.subscribe({
-  channels: [`demo_tutorial`]
+pubnub.subscribe({
+  channels: [`demo_tutorial`, `eon-maps-geolocation-input`]
 });
+
+
+
 /**
  * COMPONENT
  */
 class Routes extends Component {
 
   handleClick = (evt) => {
-    pubnubDemo.publish({
+
+    pubnub.publish({
       message: {
         "color": `blue`,
         [evt.target.name]: evt.target.value
       },
-      channel: `demo_tutorial`
+      channel: [`demo_tutorial`, `eon-maps-geolocation-input`]
     });
   }
   render() {
-    // const { isLoggedIn } = this.props
     return (
       <React.Fragment>
         <input name='input' onClick={this.handleClick} />
