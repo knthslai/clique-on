@@ -9,7 +9,7 @@
   <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.19.0.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
-  <script defer src="/bundle.js"></script>
+  <!-- <script defer src="/bundle.js"></script> -->
 
 </head>
 
@@ -26,20 +26,18 @@
 
     function getLocation() {
       if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(updatePosition);
+        navigator.geolocation.getCurrentPosition(updatePosition);
       }
 
       return null;
     };
-
     function updatePosition(position) {
       if (position) {
         window.lat = position.coords.latitude;
         window.lng = position.coords.longitude;
       }
     }
-
-    setInterval(function () { updatePosition(getLocation()); }, 10000);
+    setInterval(function () { updatePosition(getLocation()); }, 10000)
 
     function currentLocation() {
       return { lat: window.lat, lng: window.lng };
@@ -63,18 +61,19 @@
       mark.setPosition({ lat: lat, lng: lng, alt: 0 });
     };
 
+
     var pnChannel = "FSADemo-knthslai";
 
     var pubnub = new PubNub({
       publishKey: `pub-c-ec5be6a2-71b1-44d5-829f-a8695b472e37`,
       subscribeKey: `sub-c-ba1d6808-8ea8-11e8-bdf5-3621de398238`,
+      secretKey: `sec-c-YjhlMDJlYWMtM2FiNC00MDI5LTg4NDYtY2I0YmQ4YTllZjEz`
     });
 
     pubnub.subscribe({ channels: [pnChannel] });
     pubnub.addListener({ message: redraw });
 
     setInterval(function () {
-      console.log('pubnub request')
       pubnub.publish({ channel: pnChannel, message: currentLocation() });
     }, 5000);
   </script>
