@@ -3,6 +3,9 @@ import { Map, InfoWindow, Marker } from 'google-maps-react';
 import PubNub from 'pubnub'
 import key from '../../secrets'
 import { PropTypes } from 'prop-types';
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
+TimeAgo.locale(en)
 // import smoothPan from './smoothPan'
 
 const pubnub = new PubNub(key || {
@@ -13,6 +16,7 @@ const pubnub = new PubNub(key || {
 
 })
 
+const timeAgo = new TimeAgo(`en-US`)
 const pnChannel = `FSADemo-knthslai`
 
 class classMap extends Component {
@@ -120,7 +124,7 @@ class classMap extends Component {
 
     pubnub.addListener({
       message: function (message) {
-        console.log(message)
+        console.log({ message: { message }, when: timeAgo.format(Number(message.timetoken.substring(0, 13))) })
 
       }
     })

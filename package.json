@@ -46,6 +46,7 @@
     "google-map-react": "^1.0.5",
     "google-maps-react": "^2.0.2",
     "history": "^4.6.3",
+    "javascript-time-ago": "^1.0.31",
     "jison": "^0.4.18",
     "mapbox": "^1.0.0-beta10",
     "morgan": "^1.8.1",
