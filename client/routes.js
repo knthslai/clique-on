@@ -2,30 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter, Route, Switch } from 'react-router-dom'
 import PropTypes from 'prop-types'
-const key = require(`../secrets`)
 // import { Login, Signup, UserHome } from './components'
 import { me } from './store'
-import PubNub from 'pubnub'
 import MapContainer from './components/mapContainer';
-
-// import Maps from './map';
-// const pubnub = new PubNub(key || {
-//   publishKey: process.env.PUBNUB_PUB,
-//   subscribeKey: process.env.PUBNUB_SUB,
-//   secretKey: process.env.PUBNUB_SEC,
-
-// })
-// pubnub.addListener({
-//   message: function (message) {
-//     console.dir(message)
-//     // const ipApi = await axios.get(`/http://ip-api.com/json/${ip}`)
-//     // console.log('ipApi', ipApi);
-
-//   }
-// })
-// pubnub.subscribe({
-//   channels: [`demo_tutorial`, `eon-maps-geolocation-input`]
-// });
 
 /**
  * COMPONENT

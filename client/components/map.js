@@ -3,28 +3,45 @@ import { Map, InfoWindow, Marker } from 'google-maps-react';
 import PubNub from 'pubnub'
 import key from '../../secrets'
 import { PropTypes } from 'prop-types';
+// import smoothPan from './smoothPan'
 
-// const AnyReactComponent = ({ text }) => <div>{text}</div>;
+const pubnub = new PubNub(key || {
+  publishKey: process.env.PUBNUB_PUB,
+  subscribeKey: process.env.PUBNUB_SUB,
+  secretKey: process.env.PUBNUB_SEC,
+  uuid: PubNub.generateUUID()
+
+})
+
+const pnChannel = `FSADemo-knthslai`
 
 class classMap extends Component {
   constructor(props) {
     super(props);
-    this.refMap = React.createRef()
-    const { lat, lng } = this.props.initialCenter;
     this.state = {
       currentLocation: {
-        lat: lat,
-        lng: lng
-      }
+        lat: 40.758896,
+        lng: -73.985130
+
+      },
+      showingInfoWindow: false,
+      activeMarker: {},
+      selectedPlace: {},
     }
   }
 
   componentDidMount() {
+    this.getCurrentLocation()
+  }
+
+  getCurrentLocation() {
     if (this.props.centerAroundCurrentLocation) {
       if (navigator && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
           const coords = pos.coords;
           console.log(`coords`, coords);
+
+          pubnub.publish({ channel: pnChannel, message: coords })
           this.setState({
             currentLocation: {
               lat: coords.latitude,
@@ -34,22 +51,47 @@ class classMap extends Component {
         })
       }
     }
-    this.loadMap();
+    this.watchCurrLocation()
   }
+  watchCurrLocation() {
+    navigator.geolocation.watchPosition((pos) => {
+      var crd = pos.coords;
+
+      if (this.state.currentLocation.lat !== crd.latitude || this.state.currentLocation.lng !== crd.longitude) {
+        this.setState({
+          currentLocation: {
+            lat: crd.latitude,
+            lng: crd.longitude
+          }
+        })
+        pubnub.publish({ channel: pnChannel, message: this.state.currentLocation })
+      }
+    })
+  }
+
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.google !== this.props.google) {
-      this.loadMap();
-    }
+    // const latBool = Math.abs(prevState.currentLocation.lat - this.state.currentLocation.lat) > 0.000001
+    // const lngBool = Math.abs(prevState.currentLocation.lng - this.state.currentLocation.lng) > 0.000001
+    // if (latBool && lngBool) {
+
+    //   this.recenterMap();
+    // }
     if (prevState.currentLocation !== this.state.currentLocation) {
-      this.recenterMap();
+      this.recenterMap()
     }
+  }
+
+  assignMap = (mapProps, map) => {
+    this.map = map
   }
 
   recenterMap() {
-    const map = this.map;
+    const map = this.map
     const curr = this.state.currentLocation;
 
     const google = this.props.google;
+
+    // smoothPan(map, google, curr)
     const maps = google.maps;
 
     if (map) {
@@ -57,44 +99,57 @@ class classMap extends Component {
       map.panTo(center)
     }
   }
+  onMarkerClick = (props, marker, e) =>
+    this.setState({
+      selectedPlace: props,
+      activeMarker: marker,
+      showingInfoWindow: true
+    });
 
-  loadMap() {
-    if (this.props && this.props.google) {
-      // google is available
-      const { google } = this.props;
-      const maps = google.maps;
-
-      let { zoom } = this.props;
-      const { lat, lng } = this.state.currentLocation;
-      const center = new maps.LatLng(lat, lng);
-      const mapConfig = Object.assign({}, {
-        center: center,
-        zoom: zoom
+  onMapClicked = (props) => {
+    if (this.state.showingInfoWindow) {
+      this.setState({
+        showingInfoWindow: false,
+        activeMarker: null
       })
-      this.map = new maps.Map(this.refMap, mapConfig);
     }
-    return null;
   };
 
   render() {
+    this.UUID = pubnub.getUUID()
+
+    pubnub.addListener({
+      message: function (message) {
+        console.log(message)
+
+      }
+    })
+    pubnub.subscribe({
+      channels: [pnChannel, `eon-maps-geolocation-input`]
+    });
 
     return (
       <Map
         google={this.props.google}
         initialCenter={this.props.initialCenter}
-        zoom={14}
-      // center={}
+        zoom={15}
+        onReady={this.assignMap}
+        onClick={this.onMapClicked}
       >
 
-        <Marker onClick={this.onMarkerClick}
-          name="Current location" />
+        <Marker
+          name="Your position"
+          position={this.state.currentLocation}
+          onClick={this.onMarkerClick} />
 
-        <InfoWindow onClose={this.onInfoWindowClose}>
+        <InfoWindow
+          marker={this.state.activeMarker}
+          visible={this.state.showingInfoWindow}>
           <div>
-            <h1>Test</h1>
+            <h3>{this.state.selectedPlace.name}</h3>
           </div>
         </InfoWindow>
-      </Map>
+      </Map >
     );
   }
 }
@@ -108,9 +163,10 @@ classMap.defaultProps = {
   zoom: 13,
 
   initialCenter: {
-    lat: 40.7049282,
-    lng: -74.0090609
+    lat: 40.758896,
+    lng: -73.985130
+
   },
-  centerAroundCurrentLocation: false
+  centerAroundCurrentLocation: true
 }
 export default classMap;
