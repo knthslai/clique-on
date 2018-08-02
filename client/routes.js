@@ -6,26 +6,26 @@ const key = require(`../secrets`)
 // import { Login, Signup, UserHome } from './components'
 import { me } from './store'
 import PubNub from 'pubnub'
+import MapContainer from './components/mapContainer';
+
 // import Maps from './map';
-const pubnub = new PubNub(key || {
-  publishKey: process.env.PUBNUB_PUB,
-  subscribeKey: process.env.PUBNUB_SUB,
-  secretKey: process.env.PUBNUB_SEC,
+// const pubnub = new PubNub(key || {
+//   publishKey: process.env.PUBNUB_PUB,
+//   subscribeKey: process.env.PUBNUB_SUB,
+//   secretKey: process.env.PUBNUB_SEC,
 
-})
-pubnub.addListener({
-  message: function (message) {
-    console.dir(message)
-    // const ipApi = await axios.get(`/http://ip-api.com/json/${ip}`)
-    // console.log('ipApi', ipApi);
+// })
+// pubnub.addListener({
+//   message: function (message) {
+//     console.dir(message)
+//     // const ipApi = await axios.get(`/http://ip-api.com/json/${ip}`)
+//     // console.log('ipApi', ipApi);
 
-  }
-})
-pubnub.subscribe({
-  channels: [`demo_tutorial`, `eon-maps-geolocation-input`]
-});
-
-
+//   }
+// })
+// pubnub.subscribe({
+//   channels: [`demo_tutorial`, `eon-maps-geolocation-input`]
+// });
 
 /**
  * COMPONENT
@@ -45,11 +45,12 @@ class Routes extends Component {
   render() {
     return (
       <React.Fragment>
-        <input name='input' onClick={this.handleClick} />
+        <MapContainer />
       </React.Fragment>
     )
   }
 }
+
 {/* <Switch> */ }
 // {/* Routes placed here are available to all visitors */}
 // <Route path="/login" component={Login} />
