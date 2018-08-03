@@ -3,15 +3,23 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { logout } from '../store'
+import history from '../history';
 
-const Navbar = ({ handleClick, isLoggedIn }) => (
-  <div>
-    <h1 style={{ color: `white` }}>Clique.Me   </h1>
-    {isLoggedIn && <button type='submit' onClick={handleClick}>Logout</button>}
+class Navbar extends React.Component {
+  componentWillUnmount() {
+    this.handleClick()
+  }
+  render() {
+    const { handleClick, isLoggedIn } = this.props
+    return (
+      <div>
+        <h1 onClick={() => history.push(`/`)} style={{ color: `white` }}>Clique.Me   </h1>
+        {isLoggedIn && <button type='submit' style={{ alignSelf: `center`, color: `white`, background: `black`, borderRadius: `15px`, border: `1px solid white`, margin: `25px` }} onClick={handleClick}>Logout</button>}
 
-  </div>
+      </div >)
+  }
 
-)
+}
 
 /**
  * CONTAINER
@@ -19,6 +27,7 @@ const Navbar = ({ handleClick, isLoggedIn }) => (
 const mapState = state => {
   return {
     isLoggedIn: !!state.user.id
+
   }
 }
 

@@ -1,5 +1,5 @@
 const router = require(`express`).Router()
-const User = require(`../db/models/user`)
+const { User, Guest } = require(`../db/models/`)
 module.exports = router
 
 router.post(`/login`, async (req, res, next) => {
@@ -19,6 +19,21 @@ router.post(`/login`, async (req, res, next) => {
   }
 })
 
+// /auth/guest
+router.put(`/guest`, async (req, res, next) => {
+  try {
+    await Guest.findOrCreate({ where: { session: req.body.session }, defaults: { session: req.body.session, guestName: req.body.guestName } }).spread((user) => { req.login(user, err => (err ? next(err) : res.json(user))) })
+
+  } catch (err) {
+    if (err.name === `SequelizeUniqueConstraintError`) {
+      res.status(401).send(`User already exists`)
+    } else {
+      next(err)
+    }
+  }
+})
+
+// /auth/signup
 router.post(`/signup`, async (req, res, next) => {
   try {
     const user = await User.create(req.body)
@@ -41,7 +56,9 @@ router.post(`/logout`, (req, res) => {
 router.get(`/me`, (req, res) => {
   if (req.user) {
     res.json(req.user)
-  } else { res.json(req.sessionID) }
+  } else {
+    req.login(req.sessionID, err => (err ? next(err) : res.json(req.sessionID)))
+  }
 })
 // -> /auth/google
 router.use(`/google`, require(`./google`))

@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { auth } from '../store'
+import store, { auth, guestUser } from '../store'
 import { Link } from 'react-router-dom';
 import { Button, Form } from 'semantic-ui-react'
 const Chance = require(`chance`)
@@ -13,14 +13,21 @@ const chance = new Chance();
 class AuthForm extends React.Component {
 
   render() {
-    const { name, displayName, handleSubmit, error } = this.props
+    const { name, displayName, handleLogin, handleGuest, error } = this.props
     let guestName = chance.state({ full: true }).concat(` `, chance.animal({ type: `zoo` }), ` `, chance.coin());
 
     return (
       <React.Fragment>
-        <Form onSubmit={handleSubmit} name={name}>
+        <Form name={name} onSubmit={handleLogin}>
           <Form.Field>
-            <label style={{ color: `white` }}>{name.charAt(0).toUpperCase() + name.slice(1)} or ... {name === `login` ? (<Link to="/signup">Sign Up</Link>) : (<Link to="/login">Login</Link>)}</label>
+            <label style={{ color: `white` }}><h3>Guest Access</h3></label>
+            <Button type='button' name='guest' onClick={(e) => handleGuest(e, guestName)}>{guestName}</Button>
+          </Form.Field>
+          <Form.Field>
+            <label style={{ color: `white` }}><h3>{name.charAt(0).toUpperCase() + name.slice(1)}</h3></label>
+          </Form.Field>
+          <Form.Field style={{ textAlign: `center` }}>
+            <a>or ... {name === `login` ? (<Link to="/signup" style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }}>Sign Up</Link>) : (<Link style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }} to="/login">Login</Link>)}</a>
           </Form.Field>
           <Form.Field>
             <label style={{ color: `white` }}>Email</label>
@@ -31,13 +38,11 @@ class AuthForm extends React.Component {
             <input name="password" type="password" placeholder='Last Name' />
           </Form.Field>
           <Form.Field>
-            <label style={{ color: `white` }}>Guest Access as: </label>
-            <Button type='submit' name='guest' value={guestName} >{guestName}</Button>
+            <Button type='submit'>{displayName}</Button>
+            {error && error.response && <div> {error.response.data} </div>}
+            {/* <a href="/auth/GitHub" style={{ color: `white` }}>{displayName} with GitHub</a> */}
           </Form.Field>
-          <Button type='submit'>{displayName}</Button>
-          {error && error.response && <div> {error.response.data} </div>}
-          <a href="/auth/GitHub" style={{ color: `white` }}>{displayName} with GitHub</a>
-        </Form>
+        </Form >
 
       </React.Fragment >
     )
@@ -55,7 +60,8 @@ const mapLogin = state => {
   return {
     name: `login`,
     displayName: `Login`,
-    error: state.user.error
+    error: state.user.error,
+    session: state.user
   }
 }
 
@@ -69,16 +75,17 @@ const mapSignup = state => {
 
 const mapDispatch = dispatch => {
   return {
-    handleSubmit(evt) {
+    handleGuest(evt, guestName) {
       evt.preventDefault()
-      if (evt.target.name === `guest`) {
-        return null
-      } else {
-        const formName = evt.target.name
-        const email = evt.target.email.value
-        const password = evt.target.password.value
-        dispatch(auth(email, password, formName))
-      }
+      const session = store.getState().user
+      dispatch(guestUser({ guestName, session }))
+    },
+    handleLogin(evt) {
+      evt.preventDefault()
+      const formName = evt.target.name
+      const email = evt.target.email.value
+      const password = evt.target.password.value
+      dispatch(auth(email, password, formName))
     }
   }
 }
@@ -92,6 +99,7 @@ export const Signup = connect(mapSignup, mapDispatch)(AuthForm)
 AuthForm.propTypes = {
   name: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  handleLogin: PropTypes.func.isRequired,
+  handleGuest: PropTypes.func.isRequired,
   error: PropTypes.object
 }

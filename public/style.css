@@ -46,7 +46,48 @@ div#app {
   border: 1px solid white;
   -moz-outline-radius: 15px;
 }
-h1{
+h1{ 
   text-align: center;
-  border-bottom: 1px solid white;
+    display: block;
+    font-size: 2em;
+    margin-top: 0.67em;
+    margin-bottom: 0.67em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid white;
+}
+h2 {
+  text-align: center;
+  display: block;
+  font-size: 1.5em;
+  margin-top: 0.83em;
+  margin-bottom: 0.83em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+}
+h3 {
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid white; 
+  text-align: center;
+  display: block;
+  font-size: 1.17em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+}
+h4 { 
+  text-align: center;
+  display: block;
+  font-size: 1em;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
 }

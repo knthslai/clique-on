@@ -38,10 +38,10 @@ class classMap extends Component {
     this.getCurrentLocation()
   }
 
-  getCurrentLocation() {
+  getCurrentLocation = async () => {
     if (this.props.centerAroundCurrentLocation) {
       if (navigator && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
+        await navigator.geolocation.getCurrentPosition((pos) => {
           const coords = pos.coords;
           console.log(`coords`, coords);
 
@@ -57,8 +57,8 @@ class classMap extends Component {
     }
     this.watchCurrLocation()
   }
-  watchCurrLocation() {
-    navigator.geolocation.watchPosition((pos) => {
+  watchCurrLocation = async () => {
+    await navigator.geolocation.watchPosition((pos) => {
       var crd = pos.coords;
 
       if (this.state.currentLocation.lat !== crd.latitude || this.state.currentLocation.lng !== crd.longitude) {

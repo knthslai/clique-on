@@ -29,12 +29,26 @@ if (process.env.NODE_ENV === `test`) {
 if (process.env.NODE_ENV !== `production`) require(`../secrets`)
 
 // passport registration
-passport.serializeUser((user, done) => done(null, user.id))
+passport.serializeUser((oldUser, done) => {
+  const user = {}
+  if (oldUser.session) {
+    user.session = oldUser.session
+    user.id = oldUser.id
+  } else {
+    user.id = oldUser.id
+  }
+  done(null, user)
+})
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (user, done) => {
   try {
-    const user = await db.models.user.findById(id)
-    done(null, user)
+    let userFin
+    if (user.session) {
+      userFin = await db.models.guest.findById(user.id)
+    } else {
+      userFin = await db.models.user.findById(user.id)
+    }
+    done(null, userFin)
   } catch (err) {
     done(err)
   }
@@ -104,7 +118,6 @@ const startListening = () => {
   // const io = socketio(server)
   // require(`./socket`)(io)
 }
-
 const syncDb = () => db.sync()
 
 async function bootApp() {
@@ -121,4 +134,5 @@ if (require.main === module) {
   bootApp()
 } else {
   createApp()
+
 }
