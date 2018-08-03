@@ -103,14 +103,14 @@ class classMap extends Component {
       map.panTo(center)
     }
   }
-  onMarkerClick = (props, marker, e) =>
+  onMarkerClick = (props, marker, ) =>
     this.setState({
       selectedPlace: props,
       activeMarker: marker,
       showingInfoWindow: true
     });
 
-  onMapClicked = (props) => {
+  onMapClicked = () => {
     if (this.state.showingInfoWindow) {
       this.setState({
         showingInfoWindow: false,
@@ -136,7 +136,7 @@ class classMap extends Component {
       <Map
         google={this.props.google}
         initialCenter={this.props.initialCenter}
-        zoom={15}
+        zoom={16}
         onReady={this.assignMap}
         onClick={this.onMapClicked}
       >

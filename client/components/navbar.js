@@ -6,8 +6,11 @@ import { logout } from '../store'
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
   <div>
-    <h1>Clique.Me</h1>
+    <h1 style={{ color: `white` }}>Clique.Me   </h1>
+    {isLoggedIn && <button type='submit' onClick={handleClick}>Logout</button>}
+
   </div>
+
 )
 
 /**
@@ -30,8 +33,8 @@ const mapDispatch = dispatch => {
 export default connect(mapState, mapDispatch)(Navbar)
 
 /**
- * PROP TYPES
- */
+* PROP TYPES
+*/
 Navbar.propTypes = {
   handleClick: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired
