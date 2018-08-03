@@ -14,7 +14,7 @@ class Navbar extends React.Component {
     return (
       <div>
         <h1 onClick={() => history.push(`/`)} style={{ color: `white` }}>Clique.Me   </h1>
-        {isLoggedIn && <button type='submit' style={{ alignSelf: `center`, color: `white`, background: `black`, borderRadius: `15px`, border: `1px solid white`, margin: `25px` }} onClick={handleClick}>Logout</button>}
+        {isLoggedIn && <button type='submit' style={{ alignSelf: `center`, color: `white`, background: `black`, borderRadius: `15px`, border: `1px solid white`, marginBottom: `15px`, marginLeft: `20px` }} onClick={handleClick}>Logout</button>}
 
       </div >)
   }
