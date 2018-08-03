@@ -28,6 +28,8 @@ form div {
     background-image: url("https://media.giphy.com/media/9tA6H1madRvUc/giphy.gif");
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
+    background-position: center; 
 }
 .ui.form{
   padding:15px;
