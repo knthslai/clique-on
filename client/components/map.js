@@ -48,8 +48,9 @@ class classMap extends Component {
     }
     this.watchCurrLocation()
   }
-  watchCurrLocation = async () => {
-    await navigator.geolocation.watchPosition((pos) => {
+  watchCurrLocation = () => {
+    navigator.geolocation.watchPosition((pos) => {
+      // console.log(`pos`, pos.coords.accuracy);
       var crd = pos.coords;
       const latBool = Math.abs(crd.latitude - this.state.currentLocation.lat) > 0.0001
       console.log(`lat - coord difference:`, crd.latitude - this.state.currentLocation.lat);
