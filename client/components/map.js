@@ -8,7 +8,9 @@ import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 // import smoothPan from './smoothPan'
 let pubnubProps;
+console.log(`key.subscribeKey`, key.subscribeKey);
 if (key.subscribeKey) {
+
   pubnubProps = key
 } else {
   pubnubProps = {
@@ -20,6 +22,7 @@ if (key.subscribeKey) {
 }
 
 const pubnub = new PubNub(pubnubProps)
+console.log(`pubnubProps`, pubnubProps);
 const timeAgo = new TimeAgo(`en-US`)
 const pnChannel = `FSADemo-knthslai`
 
