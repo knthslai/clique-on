@@ -20,6 +20,7 @@ if (key) {
     uuid: PubNub.generateUUID()
   }
   console.log(`pubnubProps`, pubnubProps);
+  console.log(`process.env.PUBNUB_SUB`, process.env.PUBNUB_SUB);
 }
 const pubnub = new PubNub(pubnubProps)
 const timeAgo = new TimeAgo(`en-US`)
@@ -127,8 +128,6 @@ class classMap extends Component {
 
   render() {
     this.UUID = pubnub.getUUID()
-
-    console.log(`pubnub`, pubnub);
 
     pubnub.addListener({
       message: function (message) {
