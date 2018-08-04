@@ -7,15 +7,19 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 // import smoothPan from './smoothPan'
-
-const pubnub = new PubNub(key || {
-  publishKey: process.env.PUBNUB_PUB,
-  subscribeKey: process.env.PUBNUB_SUB,
-  secretKey: process.env.PUBNUB_SEC,
-  uuid: PubNub.generateUUID()
-
-})
-
+let pubnubProps;
+if (key) {
+  pubnubProps = key
+} else {
+  pubnubProps = {
+    publishKey: process.env.PUBNUB_PUB,
+    subscribeKey: process.env.PUBNUB_SUB,
+    secretKey: process.env.PUBNUB_SEC,
+    uuid: PubNub.generateUUID()
+  }
+}
+console.log(pubnubProps)
+const pubnub = new PubNub(pubnubProps)
 const timeAgo = new TimeAgo(`en-US`)
 const pnChannel = `FSADemo-knthslai`
 
@@ -121,6 +125,8 @@ class classMap extends Component {
 
   render() {
     this.UUID = pubnub.getUUID()
+
+    console.log(`pubnub`, pubnub);
 
     pubnub.addListener({
       message: function (message) {
