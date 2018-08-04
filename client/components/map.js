@@ -64,8 +64,11 @@ class classMap extends Component {
   watchCurrLocation = async () => {
     await navigator.geolocation.watchPosition((pos) => {
       var crd = pos.coords;
-
-      if (this.state.currentLocation.lat !== crd.latitude || this.state.currentLocation.lng !== crd.longitude) {
+      const latBool = Math.abs(crd.latitude - this.state.currentLocation.lat) > 0.000001
+      console.log(`lat - coord difference:`, crd.latitude - this.state.currentLocation.lat);
+      const lngBool = Math.abs(crd.longitude - this.state.currentLocation.lng) > 0.000001
+      console.log(`lng - coord difference:`, crd.latitude - this.state.currentLocation.lat);
+      if (latBool || lngBool) {
         this.setState({
           currentLocation: {
             lat: crd.latitude,
@@ -128,7 +131,8 @@ class classMap extends Component {
 
     pubnub.addListener({
       message: function (message) {
-        console.log({ message: { message }, when: timeAgo.format(Number(message.timetoken.substring(0, 13))) })
+        console.log(`message`, message);
+        // console.log({ message: { message }, when: timeAgo.format(Number(message.timetoken.substring(0, 13))) })
 
       }
     })
