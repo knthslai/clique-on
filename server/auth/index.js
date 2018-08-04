@@ -60,5 +60,9 @@ router.get(`/me`, (req, res) => {
     req.login(req.sessionID, err => (err ? next(err) : res.json(req.sessionID)))
   }
 })
+// -> /auth/session
+router.get(`/session`, (req, res) => {
+  res.json(req.sessionID)
+})
 // -> /auth/google
 router.use(`/google`, require(`./google`))

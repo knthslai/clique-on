@@ -3,6 +3,7 @@ const { User, Guest } = require(`../../server/db/models`)
 module.exports = router
 
 router.use(`/users`, require(`./users`))
+
 router.get(`/`, async (req, res) => {
   const users = await User.findAll()
   const guests = await Guest.findAll()

@@ -7,6 +7,9 @@ const Guest = db.define(`guest`, {
   },
   session: {
     type: Sequelize.STRING
+  },
+  UUID: {
+    type: Sequelize.STRING
   }
 })
 

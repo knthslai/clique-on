@@ -29,9 +29,12 @@ class AuthForm extends React.Component {
           <Form.Field style={{ textAlign: `center` }}>
             or ... {name === `login` ? (<Link to="/signup" style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }}>Sign Up</Link>) : (<Link style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }} to="/login">Login</Link>)}
           </Form.Field>
+          {
+            name === `signup` && <Form.Field><label style={{ color: `white` }}>Username</label><input name="userName" placeholder='Username' /></Form.Field>
+          }
           <Form.Field>
             <label style={{ color: `white` }}>Email</label>
-            <input name="email" placeholder='First Name' />
+            <input name="email" placeholder='you@mail.com' />
           </Form.Field>
           <Form.Field>
             <label style={{ color: `white` }}>Password</label>
@@ -85,7 +88,8 @@ const mapDispatch = dispatch => {
       const formName = evt.target.name
       const email = evt.target.email.value
       const password = evt.target.password.value
-      dispatch(auth(email, password, formName))
+      const userName = evt.target.userName.value
+      dispatch(auth(email, password, userName, formName))
     }
   }
 }

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import history from '../history'
+import PubNub from 'pubnub'
 
 /**
  * ACTION TYPES
@@ -25,7 +26,7 @@ const guestUserAct = guest => ({ type: GUEST_USER, guest })
  */
 export const guestUser = userObj => async dispatch => {
   try {
-    const { data } = await axios.put(`/auth/guest`, userObj)
+    const { data } = await axios.put(`/auth/guest`, { ...userObj, UUID: PubNub.generateUUID() })
     dispatch(guestUserAct(data))
     history.push(`/`)
   } catch (err) {
@@ -42,10 +43,10 @@ export const me = () => async dispatch => {
   }
 }
 
-export const auth = (email, password, method) => async dispatch => {
+export const auth = (email, password, userName, method) => async dispatch => {
   let res
   try {
-    res = await axios.post(`/auth/${method}`, { email, password })
+    res = await axios.post(`/auth/${method}`, { email, password, userName, UUID: PubNub.generateUUID() })
   } catch (authError) {
     return dispatch(getUser({ error: authError }))
   }

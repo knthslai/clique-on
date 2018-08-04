@@ -5,15 +5,14 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 import pubnub from './pubnub'
+const axios = require(`axios`)
 // import smoothPan from './smoothPan'
-
-const timeAgo = new TimeAgo(`en-US`)
-const pnChannel = `FSADemo-knthslai`
 
 class classMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      UUID: ``,
       currentLocation: {
         lat: 40.758896,
         lng: -73.985130
@@ -27,6 +26,7 @@ class classMap extends Component {
 
   componentDidMount() {
     this.getCurrentLocation()
+    this.setState({ UUID: pubnub.getUUID() })
   }
 
   getCurrentLocation = async () => {
@@ -109,8 +109,9 @@ class classMap extends Component {
   };
 
   render() {
-    this.UUID = pubnub.getUUID()
+    const timeAgo = new TimeAgo(`en-US`)
 
+    console.log(`pnChannel`, pnChannel);
     pubnub.addListener({
       message: function (message) {
         console.log(`message`, message);
