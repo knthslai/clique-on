@@ -27,6 +27,9 @@ const User = db.define(`user`, {
   },
   UUID: {
     type: Sequelize.STRING
+  },
+  lastChannel: {
+    type: Sequelize.STRING
   }
 })
 

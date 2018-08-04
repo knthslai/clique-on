@@ -9,6 +9,7 @@ router.get(`/`, async (req, res) => {
   const guests = await Guest.findAll()
   res.json({ users, guests })
 })
+
 router.use((req, res, next) => {
   const error = new Error(`Not Found`)
   error.status = 404

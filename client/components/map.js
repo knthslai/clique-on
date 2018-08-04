@@ -27,6 +27,7 @@ class classMap extends Component {
 
   componentDidMount = async () => {
     this.getCurrentLocation()
+    await axios.put(`/api/users/${this.props.user.id}`, { lastChannel: this.props.channel })
   }
 
   getCurrentLocation = async () => {
@@ -164,4 +165,4 @@ classMap.defaultProps = {
   centerAroundCurrentLocation: true
 }
 
-export default connect((state) => ({ uuid: state.user.UUID }))(classMap);
+export default connect((state) => ({ user: state.user }))(classMap);

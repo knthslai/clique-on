@@ -24,16 +24,6 @@ const guestUserAct = guest => ({ type: GUEST_USER, guest })
 /**
  * THUNK CREATORS
  */
-export const guestUser = userObj => async dispatch => {
-  try {
-    const session = await axios.get(`/auth/session`)
-    const { data } = await axios.put(`/auth/guest`, { ...userObj, UUID: PubNub.generateUUID() })
-    dispatch(guestUserAct(data))
-    history.push(`/channel/${session.data}`)
-  } catch (err) {
-    console.error(err)
-  }
-}
 
 export const me = () => async dispatch => {
   try {
@@ -44,20 +34,36 @@ export const me = () => async dispatch => {
   }
 }
 
-export const auth = (email, password, userName, method) => async dispatch => {
+export const auth = ({ email, password, userName, formName, url }) => async dispatch => {
   const session = await axios.get(`/auth/session`)
   let res
   try {
-    res = await axios.post(`/auth/${method}`, { email, password, userName, UUID: PubNub.generateUUID() })
+    res = await axios.post(`/auth/${formName}`, { email, password, userName, UUID: PubNub.generateUUID() })
   } catch (authError) {
     return dispatch(getUser({ error: authError }))
   }
 
   try {
     dispatch(getUser(res.data))
-    history.push(`/channel/${session.data}`)
+    if (url) {
+      history.push(url)
+    } else if (formName === `signup`) {
+      history.push(`/channel/${session.data}`)
+    } else {
+      history.push(`/channel/${res.data.lastChannel}`)
+    }
+
   } catch (dispatchOrHistoryErr) {
     console.error(dispatchOrHistoryErr)
+  }
+}
+
+export const guestUser = userObj => async dispatch => {
+  try {
+    const { data } = await axios.put(`/auth/guest`, { ...userObj, UUID: PubNub.generateUUID() })
+    dispatch(guestUserAct(data))
+  } catch (err) {
+    console.error(err)
   }
 }
 

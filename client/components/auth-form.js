@@ -15,10 +15,9 @@ class AuthForm extends React.Component {
   render() {
     const { name, displayName, handleLogin, handleGuest, error } = this.props
     let guestName = chance.state({ full: true }).concat(` `, chance.animal({ type: `zoo` }), ` `, chance.coin());
-
     return (
       <React.Fragment>
-        <Form name={name} onSubmit={handleLogin}>
+        <Form name={name} onSubmit={(e) => handleLogin(e, this.props.location.pathname)}>
           <Form.Field>
             <label style={{ color: `white` }}><h3>Guest Access</h3></label>
             <Button type='button' name='guest' onClick={(e) => handleGuest(e, guestName)}>{guestName}</Button>
@@ -83,17 +82,17 @@ const mapDispatch = dispatch => {
       const session = store.getState().user
       dispatch(guestUser({ guestName, session }))
     },
-    handleLogin(evt) {
+    handleLogin(evt, url) {
       evt.preventDefault()
       const formName = evt.target.name
       const email = evt.target.email.value
       const password = evt.target.password.value
-      if (evt.target.userName) {
-        const userName = evt.target.userName.value
-        dispatch(auth(email, password, userName, formName))
-      } else {
-        dispatch(auth(email, password, formName))
+      const userName = evt.target.userName.value
+      const payLoad = { formName, email, password, userName }
+      if (url.search(`channel/`)) {
+        payLoad.currUrl = url
       }
+      dispatch(auth(payLoad))
     }
   }
 }
