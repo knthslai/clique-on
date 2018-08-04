@@ -8,22 +8,17 @@ import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 // import smoothPan from './smoothPan'
 let pubnubProps;
-console.log(`key`, key);
-if (key) {
-
+if (key.subscribeKey) {
   pubnubProps = key
-  console.log(`pubnubProps`, pubnubProps);
 } else {
   pubnubProps = {
-
     publishKey: process.env.PUBNUB_PUB,
     subscribeKey: process.env.PUBNUB_SUB,
     secretKey: process.env.PUBNUB_SEC,
     uuid: PubNub.generateUUID()
   }
-  console.log(`pubnubProps`, pubnubProps);
-  console.log(`process.env.PUBNUB_SUB`, process.env.PUBNUB_SUB);
 }
+
 const pubnub = new PubNub(pubnubProps)
 const timeAgo = new TimeAgo(`en-US`)
 const pnChannel = `FSADemo-knthslai`
