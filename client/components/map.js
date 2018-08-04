@@ -8,7 +8,9 @@ import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 // import smoothPan from './smoothPan'
 let pubnubProps;
+console.log(`key`, key);
 if (key) {
+
   pubnubProps = key
   console.log(`pubnubProps`, pubnubProps);
 } else {
