@@ -1,28 +1,12 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker } from 'google-maps-react';
-import PubNub from 'pubnub'
-import key from '../../secrets'
 import { PropTypes } from 'prop-types';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
+import pubnub from './pubnub'
 // import smoothPan from './smoothPan'
-let pubnubProps;
-console.log(`key.subscribeKey`, key.subscribeKey);
-if (key.subscribeKey) {
 
-  pubnubProps = key
-} else {
-  pubnubProps = {
-    publishKey: process.env.PUBNUB_PUB,
-    subscribeKey: process.env.PUBNUB_SUB,
-    secretKey: process.env.PUBNUB_SEC,
-    uuid: PubNub.generateUUID()
-  }
-}
-
-const pubnub = new PubNub(pubnubProps)
-console.log(`pubnubProps`, pubnubProps);
 const timeAgo = new TimeAgo(`en-US`)
 const pnChannel = `FSADemo-knthslai`
 
@@ -67,9 +51,9 @@ class classMap extends Component {
   watchCurrLocation = async () => {
     await navigator.geolocation.watchPosition((pos) => {
       var crd = pos.coords;
-      const latBool = Math.abs(crd.latitude - this.state.currentLocation.lat) > 0.000001
+      const latBool = Math.abs(crd.latitude - this.state.currentLocation.lat) > 0.0001
       console.log(`lat - coord difference:`, crd.latitude - this.state.currentLocation.lat);
-      const lngBool = Math.abs(crd.longitude - this.state.currentLocation.lng) > 0.000001
+      const lngBool = Math.abs(crd.longitude - this.state.currentLocation.lng) > 0.0001
       console.log(`lng - coord difference:`, crd.latitude - this.state.currentLocation.lat);
       if (latBool || lngBool) {
         this.setState({
@@ -84,12 +68,6 @@ class classMap extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // const latBool = Math.abs(prevState.currentLocation.lat - this.state.currentLocation.lat) > 0.000001
-    // const lngBool = Math.abs(prevState.currentLocation.lng - this.state.currentLocation.lng) > 0.000001
-    // if (latBool && lngBool) {
-
-    //   this.recenterMap();
-    // }
     if (prevState.currentLocation !== this.state.currentLocation) {
       this.recenterMap()
     }
