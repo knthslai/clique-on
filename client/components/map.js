@@ -7,16 +7,17 @@ TimeAgo.locale(en)
 import pubnub from './pubnub'
 const axios = require(`axios`)
 // import smoothPan from './smoothPan'
+import { connect } from 'react-redux';
+import store from '../store/index';
 
 class classMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      UUID: ``,
+      pubnub: pubnub(store.getState().user.UUID),
       currentLocation: {
         lat: 40.758896,
         lng: -73.985130
-
       },
       showingInfoWindow: false,
       activeMarker: {},
@@ -24,9 +25,8 @@ class classMap extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     this.getCurrentLocation()
-    this.setState({ UUID: pubnub.getUUID() })
   }
 
   getCurrentLocation = async () => {
@@ -36,7 +36,7 @@ class classMap extends Component {
           const coords = pos.coords;
           console.log(`coords`, coords);
 
-          pubnub.publish({ channel: pnChannel, message: coords })
+          this.state.pubnub.publish({ channel: this.props.channel, message: coords })
           this.setState({
             currentLocation: {
               lat: coords.latitude,
@@ -53,9 +53,9 @@ class classMap extends Component {
       // console.log(`pos`, pos.coords.accuracy);
       var crd = pos.coords;
       const latBool = Math.abs(crd.latitude - this.state.currentLocation.lat) > 0.0001
-      console.log(`lat - coord difference:`, crd.latitude - this.state.currentLocation.lat);
+      // console.log(`lat - coord difference:`, crd.latitude - this.state.currentLocation.lat);
       const lngBool = Math.abs(crd.longitude - this.state.currentLocation.lng) > 0.0001
-      console.log(`lng - coord difference:`, crd.latitude - this.state.currentLocation.lat);
+      // console.log(`lng - coord difference:`, crd.latitude - this.state.currentLocation.lat);
       if (latBool || lngBool) {
         this.setState({
           currentLocation: {
@@ -63,7 +63,7 @@ class classMap extends Component {
             lng: crd.longitude
           }
         })
-        pubnub.publish({ channel: pnChannel, message: this.state.currentLocation })
+        this.state.pubnub.publish({ channel: this.props.channel, message: this.state.currentLocation })
       }
     })
   }
@@ -111,16 +111,15 @@ class classMap extends Component {
   render() {
     const timeAgo = new TimeAgo(`en-US`)
 
-    console.log(`pnChannel`, pnChannel);
-    pubnub.addListener({
+    this.state.pubnub.addListener({
       message: function (message) {
         console.log(`message`, message);
         // console.log({ message: { message }, when: timeAgo.format(Number(message.timetoken.substring(0, 13))) })
 
       }
     })
-    pubnub.subscribe({
-      channels: [pnChannel, `eon-maps-geolocation-input`]
+    this.state.pubnub.subscribe({
+      channels: [this.props.channel, `eon-maps-geolocation-input`]
     });
 
     return (
@@ -164,4 +163,5 @@ classMap.defaultProps = {
   },
   centerAroundCurrentLocation: true
 }
-export default classMap;
+
+export default connect((state) => ({ uuid: state.user.UUID }))(classMap);

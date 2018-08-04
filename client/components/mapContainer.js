@@ -16,7 +16,9 @@ export class Container extends Component {
     }
     return (
       <div style={style}>
-        <Map google={this.props.google}
+        <Map
+          channel={this.props.match.params.channel}
+          google={this.props.google}
         />
       </div>
     )

@@ -26,9 +26,10 @@ const guestUserAct = guest => ({ type: GUEST_USER, guest })
  */
 export const guestUser = userObj => async dispatch => {
   try {
+    const session = await axios.get(`/auth/session`)
     const { data } = await axios.put(`/auth/guest`, { ...userObj, UUID: PubNub.generateUUID() })
     dispatch(guestUserAct(data))
-    history.push(`/`)
+    history.push(`/channel/${session.data}`)
   } catch (err) {
     console.error(err)
   }
@@ -44,6 +45,7 @@ export const me = () => async dispatch => {
 }
 
 export const auth = (email, password, userName, method) => async dispatch => {
+  const session = await axios.get(`/auth/session`)
   let res
   try {
     res = await axios.post(`/auth/${method}`, { email, password, userName, UUID: PubNub.generateUUID() })
@@ -53,7 +55,7 @@ export const auth = (email, password, userName, method) => async dispatch => {
 
   try {
     dispatch(getUser(res.data))
-    history.push(`/`)
+    history.push(`/channel/${session.data}`)
   } catch (dispatchOrHistoryErr) {
     console.error(dispatchOrHistoryErr)
   }
