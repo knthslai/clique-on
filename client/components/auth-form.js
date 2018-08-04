@@ -27,7 +27,7 @@ class AuthForm extends React.Component {
             <label style={{ color: `white` }}><h3>{name.charAt(0).toUpperCase() + name.slice(1)}</h3></label>
           </Form.Field>
           <Form.Field style={{ textAlign: `center` }}>
-            or ... {name === `login` ? (<Link to="/signup" style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }}>Sign Up</Link>) : (<Link style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }} to="/login">Login</Link>)}
+            {name === `login` ? (<Link to="/signup" style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }}>or ... Sign Up</Link>) : (<Link style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }} to="/login">or ... Login</Link>)}
           </Form.Field>
           {
             name === `signup` && <Form.Field><label style={{ color: `white` }}>Username</label><input name="userName" placeholder='Username' /></Form.Field>
