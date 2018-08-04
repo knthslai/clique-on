@@ -5,6 +5,7 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 import pubnub from './pubnub'
+console.log(`pubnub`, pubnub);
 // import smoothPan from './smoothPan'
 
 const timeAgo = new TimeAgo(`en-US`)
