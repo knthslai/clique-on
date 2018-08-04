@@ -13,5 +13,5 @@ if (key.subscribeKey) {
     uuid: PubNub.generateUUID()
   }
 }
-console.log(`pubnubProps`, pubnubProps);
+console.log(`pubnubProps`, process.env);
 export default new PubNub(pubnubProps)
