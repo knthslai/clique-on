@@ -1,15 +1,8 @@
 import React from 'react';
 import ChatEngineCore from 'chat-engine'
 const now = new Date().getTime();
-const username = [`Kenneth`, now].join(`-`);
 import ReactLoading from 'react-loading';
 
-// class Message extends React.Component {
-//   render() {
-//     return (<div> {this.props.uuid}: {this.props.text} </div>
-//     );
-//   }
-// };
 export default class Chat extends React.Component {
   // return the initial state of our Chat class
   constructor() {
@@ -27,9 +20,14 @@ export default class Chat extends React.Component {
       const ChatEngineSet = await ChatEngineCore.create({
         publishKey: `pub-c-83a7b3c8-f0d5-4ba0-896f-33ddf0a20466`,
         subscribeKey: `sub-c-228d0636-98e6-11e8-b377-126307b646dc`
-      }, {
-          globalChannel: this.props.channel
-        });
+      }
+        // , {
+        //Check for Channel implementation
+        // globalChannel: this.props.channel
+        // }
+      );
+      //TODO: convert "now" time string to time of day
+      const username = [this.props.user.name, now].join(`-`);
       await ChatEngineSet.connect(username, {
         signedOnTime: now
       })
@@ -44,6 +42,8 @@ export default class Chat extends React.Component {
           chatReady: true
         })
       });
+      //TODO: connect to individual channels
+      // ChatEngineSet.connect(this.state.channel)
     } catch (e) { console.error(e) }
   }
 
@@ -95,7 +95,7 @@ export default class Chat extends React.Component {
       );
     } else {
       return (
-        <ReactLoading type="bars" color='white' height={667} width={375} />
+        <ReactLoading type="bars" color='white' backgroundColor='black' height={667} width={375} />
       )
     }
   }

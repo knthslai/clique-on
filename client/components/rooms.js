@@ -12,14 +12,20 @@ class Room extends React.Component {
     this.state = {
       room: chance.animal({ type: `pet` }) + `_Room`,
       channels: null,
-      chatReady: false
+      channelBool: false
     }
   }
   componentDidMount() {
-
-    this.setState({
-      channels: store.getState().user.channels.reverse()
-    })
+    if (this.state.channels) {
+      this.setState({
+        channelBool: true,
+        channels: store.getState().user.channels.reverse()
+      })
+    } else {
+      this.setState({
+        channels: store.getState().user.channels
+      })
+    }
 
   }
   handleSubmit = (evt) => {
@@ -32,8 +38,6 @@ class Room extends React.Component {
     this.setState({ room: evt.target.value })
   }
   render() {
-    let hasChannelBool = false
-    hasChannelBool = Array.isArray(this.state.channels)
     return (
       <React.Fragment>
         <Form onSubmit={this.handleSubmit}>
@@ -46,8 +50,7 @@ class Room extends React.Component {
           </Form.Field>
           <Form.Field>
             {
-
-              hasChannelBool ? (
+              this.state.channelBool ? (
                 <React.Fragment>
                   <label style={{ color: `white` }}><h3>Previous Rooms:</h3></label>
                   <Dropdown style={{ background: `white` }} text='Rooms'>
