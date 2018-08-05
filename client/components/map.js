@@ -6,6 +6,7 @@ import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 import { connect } from 'react-redux';
 import { Menu } from 'semantic-ui-react'
+import Chat from './Chat';
 const timeAgo = new TimeAgo(`en-US`)
 const Chance = require(`chance`)
 const chance = new Chance();
@@ -39,6 +40,7 @@ class classMap extends Component {
   }
 
   componentDidMount = () => {
+
     this.getStateHistory()
     this.getCurrentLocation()
   }
@@ -202,6 +204,9 @@ class classMap extends Component {
             </Menu.Menu>
           </Menu.Item>
         </Menu>
+        <div className="Chat">
+          <Chat channel={this.props.channel} />
+        </div>
       </React.Fragment >
     );
   }

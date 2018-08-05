@@ -91,3 +91,7 @@ h4 {
   margin-right: 0;
   font-weight: bold;
 }
+.Chat {
+  position: fixed;
+  background-color: white;
+}

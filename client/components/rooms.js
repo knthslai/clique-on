@@ -6,16 +6,17 @@ import { getChannels } from '../store';
 import store from '../store/index';
 const Chance = require(`chance`)
 const chance = new Chance();
-
 class Room extends React.Component {
   constructor() {
     super()
     this.state = {
       room: chance.animal({ type: `pet` }) + `_Room`,
-      channels: null
+      channels: null,
+      chatReady: false
     }
   }
   componentDidMount() {
+
     this.setState({
       channels: store.getState().user.channels.reverse()
     })
@@ -24,7 +25,7 @@ class Room extends React.Component {
   handleSubmit = (evt) => {
     evt.preventDefault()
     this.props.getChannels({ email: this.props.user.email || `guest`, userId: this.props.user.id, channel: `${this.state.room}___` + this.props.user.UUID })
-    history.push(`/ channel / ${this.state.room}___` + this.props.user.UUID)
+    history.push(`/channel/${this.state.room}___` + this.props.user.UUID)
   }
 
   handleChange = (evt) => {
@@ -79,4 +80,4 @@ class Room extends React.Component {
     )
   }
 }
-export default connect(state => ({ ...state }), dispatch => ({ getChannels: (payLoad) => dispatch(getChannels(payLoad)) }))(Room)
+export default connect(state => ({ ...state }), dispatch => ({ getChannels: (payLoad) => dispatch(getChannels(payLoad)) }))(Room) 
