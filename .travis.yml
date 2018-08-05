@@ -13,8 +13,8 @@ notifications:
     on_failure: always # default: always (which is annoying, as it should be)
 install:
   - npm ci # faster, goes only from package-lock
-before_script:
-  - psql -c 'create database "pubnubreact-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
+# before_script:
+#   - psql -c 'create database "pubnubreact-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
 
 before_deploy:
   - npm run build-client # make the bundle
@@ -22,6 +22,6 @@ before_deploy:
 deploy:
   skip_cleanup: true # prevents travis from deleting the build
   provider: heroku
-  app: pubnub-react-knthslai # see README
+  app: clique-on # see README
   api_key:
     secure: "p41XZC2GQrPlGZW3K5whl8+SFNqwHrDUKNyxg6FevD1UMoESL79UVCunPOf0EnuH88jxcpH1RYsK6DPmXOEMUWLTTyOEMUwmj5ccuva6vcvSib0AbxAs+FRwxX39GlUnQcS2khZiA4zqc1bovee2FpRVFHX5fJ+/5C+uak3coSDBZJ7joR6GP49iWDKghb8TVnZjXLU7u0h0dR9VfhuDUJBmIBaFcTSKMqP02fdLxWZBnjTFvQg4zhivevMZScttPUeVipGhVvl2tjSb5UXPcCT4j6vERmA+Id00m1uowYn9IEPpTB2Rz+05iUpPdQ48NiPZzFYsvUO9i2w2UpzI7GArKWTyR0j28BULhKZdbAvNLFl5zizEes1JSeJNkxlaK2Bka1/3v/kXwqPdGictl3w+hAVzXsRAQGSWAFDB/rt7dOE2TkmYs0TpTzaKUpTTKMnYj7BBNyc1NYPH1V+lRxLxM3p3v5snTHL0BlWyeJyv6a7ymcka+jNF0LT5Pu82J+cXv3ofUMpB1bSP3PGsaXExgnkXBaIXAO0VWwinlzQJlWDcYzMVY0K2ioZI70tHS4q61VBYGdGB/+ZYKpJ8lYbB5VZekSGMjYlO9kNR5Ml9n4xGHgxGeFaUVlm2S7gEzLgD3bSbuNsbtm03i6Jsu9DZemJTpcernKXzeEUTfJM=" # see README
