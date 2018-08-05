@@ -92,7 +92,7 @@ class classMap extends Component {
             this.props.user.pubnub.publish(user)
           }
         }, (e) => console.log(e), {
-            enableHighAccuracy: true,
+            enableHighAccuracy: false,
             maximumAge: 1000 * 60 * 2
           })
       }
