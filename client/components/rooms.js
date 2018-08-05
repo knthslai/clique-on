@@ -2,6 +2,8 @@ import React from 'react'
 import { Button, Form, Dropdown } from 'semantic-ui-react'
 import history from '../history';
 import { connect } from 'react-redux';
+import { getChannels } from '../store';
+import store from '../store/index';
 const Chance = require(`chance`)
 const chance = new Chance();
 
@@ -9,28 +11,32 @@ class Room extends React.Component {
   constructor() {
     super()
     this.state = {
-      room: chance.animal({ type: `pet` }) + `_Room`
+      room: chance.animal({ type: `pet` }) + `_Room`,
+      channels: null
     }
+  }
+  componentDidMount() {
+    this.setState({
+      channels: store.getState().user.channels.reverse()
+    })
+
   }
   handleSubmit = (evt) => {
     evt.preventDefault()
-    history.push(`/channel/${this.state.room}___` + this.props.user.UUID)
+    this.props.getChannels({ email: this.props.user.email || `guest`, userId: this.props.user.id, channel: `${this.state.room}___` + this.props.user.UUID })
+    history.push(`/ channel / ${this.state.room}___` + this.props.user.UUID)
   }
 
   handleChange = (evt) => {
     this.setState({ room: evt.target.value })
   }
   render() {
-    let channels = this.props.user.channels
-    const hasChannelBool = (Array.isArray(channels) || channels !== null)
-    if (hasChannelBool) {
-      channels = this.props.user.channels.reverse
-    }
+    let hasChannelBool = false
+    hasChannelBool = Array.isArray(this.state.channels)
     return (
       <React.Fragment>
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
-            <label style={{ color: `white` }}><h3>Room Name</h3></label>
 
             <input type="text" name="roomName" value={this.state.room} onChange={this.handleChange} />
           </Form.Field>
@@ -40,27 +46,31 @@ class Room extends React.Component {
           <Form.Field>
             {
 
-              hasChannelBool && (
-                <Dropdown style={{ background: `white` }} text='Rooms'>
-                  <Dropdown.Menu >
-                    <Dropdown.Item text={channels[0].substring(0, channels[0].search(`___`))} onClick={() => {
-                      history.push(`/channel/${channels[0]}`)
-                    }
-                    } />
-                    <Dropdown.Divider />
-                    {
-                      channels.slice(1).map(channel => {
-                        return (
-                          <Dropdown.Item key={channel} text={channel.substring(0, channel.search(`___`))} onClick={(e) => {
-                            console.log(e)
-                            history.push(`/channel/${channel}`)
-                          }
-                          } />
-                        )
-                      })
-                    }
-                  </Dropdown.Menu>
-                </Dropdown>)
+              hasChannelBool ? (
+                <React.Fragment>
+                  <label style={{ color: `white` }}><h3>Previous Rooms:</h3></label>
+                  <Dropdown style={{ background: `white` }} text='Rooms'>
+                    <Dropdown.Menu >
+                      <Dropdown.Item text={this.state.channels[0].substring(0, this.state.channels[0].search(`___`))} onClick={() => {
+                        history.push(`/channel/${this.state.channels[0].split(` `).join(`_`)}`)
+                      }
+                      } />
+                      <Dropdown.Divider />
+                      {
+                        this.state.channels.slice(1).map(channel => {
+                          return (
+                            <Dropdown.Item key={channel} text={channel.substring(0, channel.search(`___`))} onClick={(e) => {
+                              console.log(e)
+                              history.push(`/channel/${channel}`)
+                            }
+                            } />
+                          )
+                        })
+                      }
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </React.Fragment>
+              ) : null
 
             }
           </Form.Field>
@@ -69,4 +79,4 @@ class Room extends React.Component {
     )
   }
 }
-export default connect(state => ({ ...state }))(Room)
+export default connect(state => ({ ...state }), dispatch => ({ getChannels: (payLoad) => dispatch(getChannels(payLoad)) }))(Room)

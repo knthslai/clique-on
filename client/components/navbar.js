@@ -6,10 +6,7 @@ import { logout } from '../store'
 import history from '../history';
 class Navbar extends React.Component {
   componentDidMount() {
-    // console.log(`this.props.isLoggedIn`, this.props.isLoggedIn);
-    // if (this.props.user.id) {
 
-    // }
   }
   componentWillUnmount() {
     this.handleClick()
@@ -40,10 +37,7 @@ const mapDispatch = dispatch => {
   return {
     handleClick() {
       dispatch(logout())
-    },
-    // getChannels: (userId) =>
-    //   dispatch(getChannels(userId))
-
+    }
   }
 }
 

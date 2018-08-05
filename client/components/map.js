@@ -5,7 +5,7 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 import { connect } from 'react-redux';
-
+import { Menu } from 'semantic-ui-react'
 const timeAgo = new TimeAgo(`en-US`)
 const Chance = require(`chance`)
 const chance = new Chance();
@@ -20,7 +20,7 @@ class classMap extends Component {
       },
       showingInfoWindow: false,
       activeMarker: {},
-      people: [],
+      people: null,
       selectedPerson: {},
     }
     this.props.user.pubnub.addListener({
@@ -39,46 +39,8 @@ class classMap extends Component {
   }
 
   componentDidMount = () => {
-
     this.getStateHistory()
     this.getCurrentLocation()
-
-  }
-
-  getCurrentLocation = () => {
-    if (this.props.centerAroundCurrentLocation) {
-      if (navigator && navigator.geolocation) {
-        navigator.geolocation.watchPosition((pos) => {
-          const latBool = Math.abs(pos.coords.latitude - this.state.currentLocation.lat) > 0.0001
-          // console.log(`lat - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
-          const lngBool = Math.abs(pos.coords.longitude - this.state.currentLocation.lng) > 0.0001
-          // console.log(`lng - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
-          if (latBool || lngBool) {
-            this.setState({
-              currentLocation: {
-                lat: pos.coords.latitude,
-                lng: pos.coords.longitude
-              }
-            })
-            const user = { id: this.props.user.id, channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: pos.timestamp, UUID: this.props.user.UUID } }
-            this.props.user.pubnub.publish(user)
-          }
-        }, (e) => console.log(e), {
-            enableHighAccuracy: true,
-            maximumAge: 1000 * 60 * 2
-          })
-      }
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.currentLocation !== this.state.currentLocation) {
-      this.recenterMap()
-    }
-  }
-
-  assignMap = (mapProps, map) => {
-    this.map = map
   }
   getStateHistory = async () => {
     const result = {}
@@ -107,20 +69,51 @@ class classMap extends Component {
     this.setState({
       people: result
     })
-
+    // dispatch(getHistory(result))
+  }
+  getCurrentLocation = () => {
+    if (this.props.centerAroundCurrentLocation) {
+      if (navigator && navigator.geolocation) {
+        navigator.geolocation.watchPosition((pos) => {
+          const latBool = Math.abs(pos.coords.latitude - this.state.currentLocation.lat) > 0.0001
+          // console.log(`lat - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
+          const lngBool = Math.abs(pos.coords.longitude - this.state.currentLocation.lng) > 0.0001
+          // console.log(`lng - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
+          if (latBool || lngBool) {
+            this.setState({
+              currentLocation: {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude
+              }
+            })
+            const user = { id: this.props.user.id, channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: pos.timestamp, UUID: this.props.user.UUID } }
+            this.props.user.pubnub.publish(user)
+          }
+        }, (e) => console.log(e), {
+            enableHighAccuracy: true,
+            maximumAge: 1000 * 60 * 2
+          })
+      }
+    }
   }
 
-  // fetchStateHistory() {
-  //   this.props.getHistory
-  // }
-  recenterMap() {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.currentLocation !== this.state.currentLocation) {
+      this.recenterMap(this.state.currentLocation)
+    }
+  }
+
+  assignMap = (mapProps, map) => {
+    this.map = map
+  }
+
+  recenterMap(coords) {
     const map = this.map
-    const curr = this.state.currentLocation;
     const google = this.props.google;
     // smoothPan(map, google, curr)
     const maps = google.maps;
     if (map) {
-      let center = new maps.LatLng(curr.lat, curr.lng)
+      let center = new maps.LatLng(coords.lat, coords.lng)
       map.panTo(center)
     }
   }
@@ -148,44 +141,68 @@ class classMap extends Component {
   }
   render() {
     return (
-      <Map
-        google={this.props.google}
-        initialCenter={this.props.initialCenter}
-        zoom={16}
-        onReady={this.assignMap}
-        onClick={this.onMapClicked}
-      >
-        <Marker
-          animation="google.maps.Animation.DROP"
-          position={this.state.currentLocation}
-          onClick={this.onMarkerClick}
-          label='You'
-        />
+      <React.Fragment>
+        <Map
+          google={this.props.google}
+          initialCenter={this.props.initialCenter}
+          zoom={16}
+          onReady={this.assignMap}
+          onClick={this.onMapClicked}
+        >
+          <Marker
+            animation="google.maps.Animation.DROP"
+            position={this.state.currentLocation}
+            onClick={this.onMarkerClick}
+            label='You'
+          />
 
-        {
-          Object.keys(this.state.people).map(key => {
-            const person = this.state.people[key]
-            const { name, lat, lng } = this.state.people[key].entry
-            return (
+          {
 
-              <Marker
-                icon={`http://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
-                key={person.timetoken}
-                animation="google.maps.Animation.DROP"
-                label={name[0].toUpperCase()}
-                name={name}
-                title={timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
-                position={{ lat: lat, lng: lng }}
-                onClick={this.onMarkerClick} />)
-          })}
-        <InfoWindow
-          marker={this.state.activeMarker}
-          visible={this.state.showingInfoWindow}>
-          <div>
-            <h3>{this.state.selectedPerson.name}</h3>
-          </div>
-        </InfoWindow>
-      </Map >
+            this.state.people && (
+              Object.keys(this.state.people).map(key => {
+                const person = this.state.people[key]
+                const { name, lat, lng } = this.state.people[key].entry
+                return (
+                  <Marker
+                    icon={`http://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
+                    key={person.timetoken}
+                    animation="google.maps.Animation.DROP"
+                    label={name[0].toUpperCase()}
+                    name={name}
+                    title={timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
+                    position={{ lat: lat, lng: lng }}
+                    onClick={this.onMarkerClick} />
+                )
+              }))}
+          < InfoWindow
+            marker={this.state.activeMarker}
+            visible={this.state.showingInfoWindow}>
+            <div>
+              <h3>{this.state.selectedPerson.name}</h3>
+            </div>
+          </InfoWindow>
+        </Map >
+        <Menu vertical >
+          <Menu.Item style={{ backgroundColor: `white` }}>
+            <Menu.Header>Recently Updated Locations</Menu.Header>
+            <Menu.Menu >
+              {
+                this.state.people && (
+                  Object.keys(this.state.people).map(key => {
+                    const person = this.state.people[key]
+                    const { name, lat, lng } = this.state.people[key].entry
+                    return (
+                      <Menu.Item
+                        key={person.timetoken}
+                        name={name + ` - Updated: ` + timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
+                        onClick={() => this.recenterMap({ lat, lng })}
+                      />)
+                  }))
+              }
+            </Menu.Menu>
+          </Menu.Item>
+        </Menu>
+      </React.Fragment >
     );
   }
 }

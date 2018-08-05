@@ -3,20 +3,13 @@ import React, { Component } from 'react';
 import ReactLoading from 'react-loading';
 import Map from './map';
 import { connect } from 'react-redux';
-import { getChannels } from '../store/user';
 
 const LoadingContainer = () => (
   <ReactLoading type="bars" color='white' height={667} width={375} />
 )
 
 class Container extends Component {
-  componentDidMount() {
-    if (this.propsisLoggedIn) {
-      getChannels({ userId: this.props.user.id, channel: this.props.channel, email: this.props.user.email || `guest` })
-    }
-  }
   render() {
-    ;
     return (
       <React.Fragment>
         <div className="addthis_inline_share_toolbox" />

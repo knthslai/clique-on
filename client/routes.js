@@ -7,7 +7,6 @@ import { me } from './store'
 import MapContainer from './components/mapContainer';
 import Room from './components/rooms';
 
-
 /**
  * COMPONENT
  */
@@ -29,8 +28,9 @@ class Routes extends Component {
           <Route path="/signup" component={Signup} />
           {isLoggedIn && (
             <Switch>
-              <Route path="/createRoom" component={Room} />
+
               <Route path="/channel/:channel" component={MapContainer} />
+              <Route path="/" component={Room} />
             </Switch>
           )}
 

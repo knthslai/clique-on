@@ -30,7 +30,7 @@ const getChannelsAct = channels => ({ type: GET_CHANNELS, channels })
 /**
  * THUNK CREATORS
  */
-export const getChannels = ({ userId, channel, email }) => async dispatch => {
+export const getChannels = ({ userId, channel, email, pubnubCH }) => async dispatch => {
   try {
     if (email === `guest`) {
       const { data } = await axios.put(`/api/users/guests/${userId}`, { channel: channel })
@@ -39,7 +39,6 @@ export const getChannels = ({ userId, channel, email }) => async dispatch => {
       const { data } = await axios.put(`/api/users/${userId}`, { channel: channel })
       dispatch(getChannelsAct(data))
     }
-
   } catch (err) {
     console.error(err)
   }
@@ -61,9 +60,10 @@ export const me = () => async dispatch => {
 export const auth = ({ email, password, name, formName, url }) => async dispatch => {
   let res
   let payLoad
+  let pubnubItem
   try {
     res = await axios.post(`/auth/${formName}`, { email, password, name, UUID: PubNub.generateUUID() })
-    const pubnubItem = pubnub(res.data.UUID)
+    pubnubItem = pubnub(res.data.UUID)
     payLoad = { ...res.data, pubnub: pubnubItem }
   } catch (authError) {
     return dispatch(getUser({ error: authError }))
@@ -71,6 +71,8 @@ export const auth = ({ email, password, name, formName, url }) => async dispatch
   try {
     dispatch(getUser(payLoad))
     if (url) {
+      const newChannel = url.substring(url.search(`channel/`) + 8)
+      dispatch(getChannels({ channel: newChannel, userId: payLoad.id, email: payLoad.email, pubnubCH: payLoad.pubnub }))
       history.push(url)
     } else {
       history.push(`/createRoom`)
