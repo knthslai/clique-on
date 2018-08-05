@@ -97,7 +97,7 @@ const mapDispatch = dispatch => {
       const password = evt.target.password.value
       const payLoad = { formName, email, password }
       if (evt.target.userName) {
-        payLoad.userName = evt.target.userName.value
+        payLoad.name = evt.target.userName.value
       }
       if (url.search(`channel/`)) {
         payLoad.currUrl = url

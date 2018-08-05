@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { Login, Signup, UserHome } from './components'
 import { me } from './store'
 import MapContainer from './components/mapContainer';
+import Room from './components/rooms';
 
 /**
  * COMPONENT
@@ -26,7 +27,7 @@ class Routes extends Component {
           <Route path="/signup" component={Signup} />
           {isLoggedIn && (
             <Switch>
-              {/* Routes placed here are only available after logging in */}
+              <Route path="/createRoom" component={Room} />
               <Route path="/channel/:channel" component={MapContainer} />
             </Switch>
           )}

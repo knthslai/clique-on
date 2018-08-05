@@ -17,12 +17,18 @@ router.get(`/`, async (req, res, next) => {
 })
 
 router.put(`/:id`, async (req, res, next) => {
+  console.log(`req.body`, req.body);
   try {
-    await User.update(
-      req.body,
-      { where: { id: req.params.id } }
+    const foundUser = await User.findById(Number(req.params.id))
+    let newList;
+    if (foundUser.channels) {
+      newList = [...foundUser.channels, req.body.channel]
+    } else {
+      newList = [req.body.channel]
+    }
+    await User.update({ channels: newList }, { where: { id: Number(req.params.id) } }
     )
-    res.status(200).send()
+    res.json(newList)
   } catch (err) {
     next(err)
   }

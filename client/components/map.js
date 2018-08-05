@@ -4,19 +4,16 @@ import { PropTypes } from 'prop-types';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
-import pubnub from './pubnub'
-const axios = require(`axios`)
-// import smoothPan from './smoothPan'
 import { connect } from 'react-redux';
-import store from '../store/index';
-
+import { getChannels } from '../store/user';
 const timeAgo = new TimeAgo(`en-US`)
+const Chance = require(`chance`)
+const chance = new Chance();
 
 class classMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pubnub: pubnub(store.getState().user.UUID),
       currentLocation: {
         lat: 40.758896,
         lng: -73.985130
@@ -26,21 +23,24 @@ class classMap extends Component {
       people: [],
       selectedPerson: {},
     }
-    this.state.pubnub.addListener({
-      message: (message) => {
-        this.setState({
-          people: this.state.people.push(message.message)
-        })
+    this.props.user.pubnub.addListener({
+      message: ({ message }) => {
+        if (message.UUID !== this.props.user.UUID) {
+          this.setState(prevState => ({
+            people: [...prevState.people, message]
+          }))
+        }
       }
     })
 
-    this.state.pubnub.subscribe({
+    this.props.user.pubnub.subscribe({
       channels: [this.props.channel]
     });
   }
 
   componentDidMount = () => {
-    axios.put(`/api/users/${this.props.user.id}`, { lastChannel: this.props.channel })
+    this.props.getChannels({ userId: this.props.user.id, channel: this.props.channel })
+    this.getStateHistory()
     this.getCurrentLocation()
 
   }
@@ -60,7 +60,8 @@ class classMap extends Component {
                 lng: pos.coords.longitude
               }
             })
-            this.state.pubnub.publish({ channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: timeAgo.format(Number(pos.timestamp.toString().substring(0, 13))), uuid: this.props.user.UUID } })
+            const user = { id: this.props.user.id, channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: pos.timestamp, UUID: this.props.user.UUID } }
+            this.props.user.pubnub.publish(user)
           }
         }, (e) => console.log(e), {
             enableHighAccuracy: true,
@@ -79,7 +80,39 @@ class classMap extends Component {
   assignMap = (mapProps, map) => {
     this.map = map
   }
+  getStateHistory = async () => {
+    const result = {}
+    const { messages } = await this.props.user.pubnub.history(
+      {
+        channel: this.props.channel,
+        count: 100 // how many items to fetch
+        // start: (Date.now() - 2 * 60 * 60 * 1000).toString() + `0000`, // start time token to fetch
+      })
+    messages.filter(message => {
+      const { UUID } = message.entry
+      if (UUID !== this.props.user.UUID) {
+        return true
+      } else {
+        return false
+      }
+    })
+    messages.forEach(message => {
+      const { UUID } = message.entry
+      if (!result[UUID]) {
+        result[UUID] = { timetoken: message.timetoken, entry: message.entry }
+      } else if (result[UUID].timetoken < message.timetoken) {
+        result[UUID].timetoken = message.timetoken
+      }
+    })
+    this.setState({
+      people: result
+    })
 
+  }
+
+  // fetchStateHistory() {
+  //   this.props.getHistory
+  // }
   recenterMap() {
     const map = this.map
     const curr = this.state.currentLocation;
@@ -108,10 +141,12 @@ class classMap extends Component {
       })
     }
   }
-
+  returnColor = () => {
+    const colors = [`red`, `blue`, `green`, `yellow`, `orange`, `purple`]
+    const index = chance.integer({ min: 0, max: colors.length - 1 })
+    return colors[index]
+  }
   render() {
-    console.log(`people->`, this.state.people)
-
     return (
       <Map
         google={this.props.google}
@@ -120,12 +155,29 @@ class classMap extends Component {
         onReady={this.assignMap}
         onClick={this.onMapClicked}
       >
-
         <Marker
-          name="Your position"
+          animation="google.maps.Animation.DROP"
           position={this.state.currentLocation}
-          onClick={this.onMarkerClick} />
+          onClick={this.onMarkerClick}
+          label='You'
+        />
 
+        {
+          Object.keys(this.state.people).map(key => {
+            const person = this.state.people[key]
+            const { name, lat, lng } = this.state.people[key].entry
+            return (
+
+              <Marker
+                icon={`http://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
+                key={person.timetoken}
+                animation="google.maps.Animation.DROP"
+                label={name[0].toUpperCase()}
+                name={name}
+                title={timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
+                position={{ lat: lat, lng: lng }}
+                onClick={this.onMarkerClick} />)
+          })}
         <InfoWindow
           marker={this.state.activeMarker}
           visible={this.state.showingInfoWindow}>
@@ -154,4 +206,6 @@ classMap.defaultProps = {
   centerAroundCurrentLocation: true
 }
 
-export default connect((state) => ({ user: state.user }))(classMap);
+export default connect(state => ({ ...state }), dispatch => ({
+  getChannels: (userId) => dispatch(getChannels(userId))
+}))(classMap);

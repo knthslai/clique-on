@@ -21,8 +21,10 @@ router.post(`/login`, async (req, res, next) => {
 
 // /auth/guest
 router.put(`/guest`, async (req, res, next) => {
+
   try {
     const newGuest = req.body
+    // console.log(`newGuest`, newGuest);
     await Guest.findOrCreate({ where: { session: req.body.session }, defaults: { ...newGuest } }).spread((user) => { req.login(user, err => (err ? next(err) : res.json(user))) })
 
   } catch (err) {

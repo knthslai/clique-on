@@ -119,7 +119,7 @@ const startListening = () => {
   // require(`./socket`)(io)
 }
 const syncDb = () => db.sync(
-  { force: true }
+  // { force: true }
 )
 
 async function bootApp() {
