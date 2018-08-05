@@ -22,7 +22,8 @@ router.post(`/login`, async (req, res, next) => {
 // /auth/guest
 router.put(`/guest`, async (req, res, next) => {
   try {
-    await Guest.findOrCreate({ where: { session: req.body.session }, defaults: { session: req.body.session, guestName: req.body.guestName } }).spread((user) => { req.login(user, err => (err ? next(err) : res.json(user))) })
+    const newGuest = req.body
+    await Guest.findOrCreate({ where: { session: req.body.session }, defaults: { ...newGuest } }).spread((user) => { req.login(user, err => (err ? next(err) : res.json(user))) })
 
   } catch (err) {
     if (err.name === `SequelizeUniqueConstraintError`) {

@@ -2,7 +2,7 @@ const Sequelize = require(`sequelize`)
 const db = require(`../db`)
 
 const Guest = db.define(`guest`, {
-  guestName: {
+  name: {
     type: Sequelize.STRING,
   },
   session: {

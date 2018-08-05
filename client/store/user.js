@@ -18,7 +18,7 @@ const defaultUser = {}
  * ACTION CREATORS
  */
 const getUser = user => ({ type: GET_USER, user })
-const removeUser = () => ({ type: REMOVE_USER })
+const removeUser = session => ({ type: REMOVE_USER, session })
 const guestUserAct = guest => ({ type: GUEST_USER, guest })
 
 /**
@@ -58,19 +58,26 @@ export const auth = ({ email, password, userName, formName, url }) => async disp
   }
 }
 
-export const guestUser = userObj => async dispatch => {
+export const guestUser = ({ guest, url }) => async dispatch => {
   try {
-    const { data } = await axios.put(`/auth/guest`, { ...userObj, UUID: PubNub.generateUUID() })
+    const { data } = await axios.put(`/auth/guest`, { ...guest, UUID: PubNub.generateUUID() })
     dispatch(guestUserAct(data))
+    if (url) {
+      history.push(url)
+    } else {
+      history.push(`/channel/${data.session}`)
+    }
   } catch (err) {
     console.error(err)
   }
+
 }
 
 export const logout = () => async dispatch => {
   try {
     await axios.post(`/auth/logout`)
-    dispatch(removeUser())
+    const session = await axios.get(`/auth/session`)
+    dispatch(removeUser(session.data))
     history.push(`/login`)
   } catch (err) {
     console.error(err)
@@ -87,7 +94,7 @@ export default function (state = defaultUser, action) {
     case GET_USER:
       return action.user
     case REMOVE_USER:
-      return defaultUser
+      return action.session
     default:
       return state
   }

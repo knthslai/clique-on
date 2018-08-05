@@ -10,6 +10,8 @@ const axios = require(`axios`)
 import { connect } from 'react-redux';
 import store from '../store/index';
 
+const timeAgo = new TimeAgo(`en-US`)
+
 class classMap extends Component {
   constructor(props) {
     super(props);
@@ -21,52 +23,51 @@ class classMap extends Component {
       },
       showingInfoWindow: false,
       activeMarker: {},
-      selectedPlace: {},
+      people: [],
+      selectedPerson: {},
     }
-  }
-
-  componentDidMount = async () => {
-    this.getCurrentLocation()
-    await axios.put(`/api/users/${this.props.user.id}`, { lastChannel: this.props.channel })
-  }
-
-  getCurrentLocation = async () => {
-    if (this.props.centerAroundCurrentLocation) {
-      if (navigator && navigator.geolocation) {
-        await navigator.geolocation.getCurrentPosition((pos) => {
-          const coords = pos.coords;
-          console.log(`coords`, coords);
-
-          this.state.pubnub.publish({ channel: this.props.channel, message: coords })
-          this.setState({
-            currentLocation: {
-              lat: coords.latitude,
-              lng: coords.longitude
-            }
-          })
-        })
-      }
-    }
-    this.watchCurrLocation()
-  }
-  watchCurrLocation = () => {
-    navigator.geolocation.watchPosition((pos) => {
-      // console.log(`pos`, pos.coords.accuracy);
-      var crd = pos.coords;
-      const latBool = Math.abs(crd.latitude - this.state.currentLocation.lat) > 0.0001
-      // console.log(`lat - coord difference:`, crd.latitude - this.state.currentLocation.lat);
-      const lngBool = Math.abs(crd.longitude - this.state.currentLocation.lng) > 0.0001
-      // console.log(`lng - coord difference:`, crd.latitude - this.state.currentLocation.lat);
-      if (latBool || lngBool) {
+    this.state.pubnub.addListener({
+      message: (message) => {
         this.setState({
-          currentLocation: {
-            lat: crd.latitude,
-            lng: crd.longitude
-          }
+          people: this.state.people.push(message.message)
         })
-        this.state.pubnub.publish({ channel: this.props.channel, message: this.state.currentLocation })
       }
     })
+
+    this.state.pubnub.subscribe({
+      channels: [this.props.channel]
+    });
+  }
+
+  componentDidMount = () => {
+    axios.put(`/api/users/${this.props.user.id}`, { lastChannel: this.props.channel })
+    this.getCurrentLocation()
+
+  }
+
+  getCurrentLocation = () => {
+    if (this.props.centerAroundCurrentLocation) {
+      if (navigator && navigator.geolocation) {
+        navigator.geolocation.watchPosition((pos) => {
+          const latBool = Math.abs(pos.coords.latitude - this.state.currentLocation.lat) > 0.0001
+          // console.log(`lat - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
+          const lngBool = Math.abs(pos.coords.longitude - this.state.currentLocation.lng) > 0.0001
+          // console.log(`lng - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
+          if (latBool || lngBool) {
+            this.setState({
+              currentLocation: {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude
+              }
+            })
+            this.state.pubnub.publish({ channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: timeAgo.format(Number(pos.timestamp.toString().substring(0, 13))), uuid: this.props.user.UUID } })
+          }
+        }, (e) => console.log(e), {
+            enableHighAccuracy: true,
+            maximumAge: 1000 * 60 * 2
+          })
+      }
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -82,23 +83,22 @@ class classMap extends Component {
   recenterMap() {
     const map = this.map
     const curr = this.state.currentLocation;
-
     const google = this.props.google;
-
     // smoothPan(map, google, curr)
     const maps = google.maps;
-
     if (map) {
       let center = new maps.LatLng(curr.lat, curr.lng)
       map.panTo(center)
     }
   }
-  onMarkerClick = (props, marker, ) =>
+
+  onMarkerClick = (props, marker, ) => {
     this.setState({
-      selectedPlace: props,
+      selectedPerson: props,
       activeMarker: marker,
       showingInfoWindow: true
-    });
+    })
+  }
 
   onMapClicked = () => {
     if (this.state.showingInfoWindow) {
@@ -107,21 +107,10 @@ class classMap extends Component {
         activeMarker: null
       })
     }
-  };
+  }
 
   render() {
-    const timeAgo = new TimeAgo(`en-US`)
-
-    this.state.pubnub.addListener({
-      message: function (message) {
-        console.log(`message`, message);
-        // console.log({ message: { message }, when: timeAgo.format(Number(message.timetoken.substring(0, 13))) })
-
-      }
-    })
-    this.state.pubnub.subscribe({
-      channels: [this.props.channel, `eon-maps-geolocation-input`]
-    });
+    console.log(`people->`, this.state.people)
 
     return (
       <Map
@@ -141,7 +130,7 @@ class classMap extends Component {
           marker={this.state.activeMarker}
           visible={this.state.showingInfoWindow}>
           <div>
-            <h3>{this.state.selectedPlace.name}</h3>
+            <h3>{this.state.selectedPerson.name}</h3>
           </div>
         </InfoWindow>
       </Map >

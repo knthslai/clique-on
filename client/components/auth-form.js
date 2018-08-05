@@ -20,7 +20,7 @@ class AuthForm extends React.Component {
         <Form name={name} onSubmit={(e) => handleLogin(e, this.props.location.pathname)}>
           <Form.Field>
             <label style={{ color: `white` }}><h3>Guest Access</h3></label>
-            <Button type='button' name='guest' onClick={(e) => handleGuest(e, guestName)}>{guestName}</Button>
+            <Button type='button' name='guest' onClick={(e) => handleGuest(e, guestName, this.props.location.pathname)}>{guestName}</Button>
           </Form.Field>
           <Form.Field>
             <label style={{ color: `white` }}><h3>{name.charAt(0).toUpperCase() + name.slice(1)}</h3></label>
@@ -77,18 +77,28 @@ const mapSignup = state => {
 
 const mapDispatch = dispatch => {
   return {
-    handleGuest(evt, guestName) {
+    handleGuest(evt, name, urlFromForm) {
+
       evt.preventDefault()
       const session = store.getState().user
-      dispatch(guestUser({ guestName, session }))
+      const guest = { name, session }
+      const payLoad = { guest }
+
+      if (urlFromForm.search(`channel/`) > 0) {
+
+        payLoad.url = urlFromForm
+      }
+      dispatch(guestUser(payLoad))
     },
     handleLogin(evt, url) {
       evt.preventDefault()
       const formName = evt.target.name
       const email = evt.target.email.value
       const password = evt.target.password.value
-      const userName = evt.target.userName.value
-      const payLoad = { formName, email, password, userName }
+      const payLoad = { formName, email, password }
+      if (evt.target.userName) {
+        payLoad.userName = evt.target.userName.value
+      }
       if (url.search(`channel/`)) {
         payLoad.currUrl = url
       }

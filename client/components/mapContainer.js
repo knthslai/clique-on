@@ -5,7 +5,7 @@ import Map from './map';
 
 const LoadingContainer = () => (
 
-  <ReactLoading type="bars" color='black' height={667} width={375} />
+  <ReactLoading type="bars" color='white' height={667} width={375} />
 )
 
 export class Container extends Component {
