@@ -30,10 +30,16 @@ const getChannelsAct = channels => ({ type: GET_CHANNELS, channels })
 /**
  * THUNK CREATORS
  */
-export const getChannels = ({ userId, channel }) => async dispatch => {
+export const getChannels = ({ userId, channel, email }) => async dispatch => {
   try {
-    const { data } = await axios.put(`/api/users/${userId}`, { channel: channel })
-    dispatch(getChannelsAct(data))
+    if (email === `guest`) {
+      const { data } = await axios.put(`/api/users/guests/${userId}`, { channel: channel })
+      dispatch(getChannelsAct(data))
+    } else {
+      const { data } = await axios.put(`/api/users/${userId}`, { channel: channel })
+      dispatch(getChannelsAct(data))
+    }
+
   } catch (err) {
     console.error(err)
   }
@@ -82,8 +88,11 @@ export const guestUser = ({ guest, url }) => async dispatch => {
     const payLoad = { ...data, pubnub: pubnubItem }
     dispatch(guestUserAct(payLoad))
     if (url) {
-      history.push(url + data.session)
-    } else {
+      history.push(url)
+      // } else {
+      //   history.push(`/createRoom`)
+    }
+    else {
       history.push(`/channel/${data.session}`)
     }
   } catch (err) {

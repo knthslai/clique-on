@@ -5,7 +5,7 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 import { connect } from 'react-redux';
-import { getChannels } from '../store/user';
+
 const timeAgo = new TimeAgo(`en-US`)
 const Chance = require(`chance`)
 const chance = new Chance();
@@ -39,7 +39,7 @@ class classMap extends Component {
   }
 
   componentDidMount = () => {
-    this.props.getChannels({ userId: this.props.user.id, channel: this.props.channel })
+
     this.getStateHistory()
     this.getCurrentLocation()
 
@@ -206,6 +206,4 @@ classMap.defaultProps = {
   centerAroundCurrentLocation: true
 }
 
-export default connect(state => ({ ...state }), dispatch => ({
-  getChannels: (userId) => dispatch(getChannels(userId))
-}))(classMap);
+export default connect(state => ({ ...state }))(classMap);

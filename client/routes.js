@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter, Route, Switch } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { Login, Signup, UserHome } from './components'
+import { Login, Signup } from './components'
 import { me } from './store'
 import MapContainer from './components/mapContainer';
 import Room from './components/rooms';
+
 
 /**
  * COMPONENT
@@ -15,6 +16,7 @@ class Routes extends Component {
   componentDidMount() {
     // runs /auth/me -> returns user if session
     this.props.loadInitialData()
+
   }
   render() {
     const { isLoggedIn } = this.props
@@ -55,6 +57,7 @@ const mapState = state => {
 const mapDispatch = dispatch => {
   return {
     loadInitialData() {
+
       dispatch(me())
     }
   }

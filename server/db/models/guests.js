@@ -10,6 +10,9 @@ const Guest = db.define(`guest`, {
   },
   UUID: {
     type: Sequelize.STRING
+  },
+  channels: {
+    type: Sequelize.ARRAY(Sequelize.STRING)
   }
 })
 

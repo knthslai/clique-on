@@ -1,11 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import { logout } from '../store'
 import history from '../history';
-
 class Navbar extends React.Component {
+  componentDidMount() {
+    // console.log(`this.props.isLoggedIn`, this.props.isLoggedIn);
+    // if (this.props.user.id) {
+
+    // }
+  }
   componentWillUnmount() {
     this.handleClick()
   }
@@ -26,8 +31,8 @@ class Navbar extends React.Component {
  */
 const mapState = state => {
   return {
+    ...state,
     isLoggedIn: !!state.user.id
-
   }
 }
 
@@ -35,7 +40,10 @@ const mapDispatch = dispatch => {
   return {
     handleClick() {
       dispatch(logout())
-    }
+    },
+    // getChannels: (userId) =>
+    //   dispatch(getChannels(userId))
+
   }
 }
 

@@ -21,7 +21,11 @@ class Room extends React.Component {
     this.setState({ room: evt.target.value })
   }
   render() {
-    const channels = this.props.user.channels.reverse
+    let channels = this.props.user.channels
+    const hasChannelBool = (Array.isArray(channels) || channels !== null)
+    if (hasChannelBool) {
+      channels = this.props.user.channels.reverse
+    }
     return (
       <React.Fragment>
         <Form onSubmit={this.handleSubmit}>
@@ -36,7 +40,7 @@ class Room extends React.Component {
           <Form.Field>
             {
 
-              (Array.isArray(channels)) && (
+              hasChannelBool && (
                 <Dropdown style={{ background: `white` }} text='Rooms'>
                   <Dropdown.Menu >
                     <Dropdown.Item text={channels[0].substring(0, channels[0].search(`___`))} onClick={() => {
@@ -58,7 +62,8 @@ class Room extends React.Component {
                   </Dropdown.Menu>
                 </Dropdown>)
 
-            }</Form.Field>
+            }
+          </Form.Field>
         </Form >
       </React.Fragment >
     )

@@ -80,6 +80,17 @@ const createApp = () => {
   // auth and api routes
   app.use(`/auth`, require(`./auth`))
   app.use(`/api`, require(`./api`))
+  // function checkPermissions(req, res, next) {
+  //   if (req.user.email) {
+
+  //     next();
+  //   } else {
+  //     res.redirect(`/`);
+  //   }
+  // }
+  // app.get(`/channel/*`, checkPermissions, function (req, res, next) { next() })
+  // app.get(`/createRoom`, checkPermissions, function (req, res, next) { next() })
+  // app.get(`/public*`, checkPermissions, function (req, res, next) { next() })
 
   // static file-serving middleware
   app.use(express.static(path.join(__dirname, `..`, `public`)))
@@ -119,7 +130,7 @@ const startListening = () => {
   // require(`./socket`)(io)
 }
 const syncDb = () => db.sync(
-  // { force: true }
+  { force: true }
 )
 
 async function bootApp() {
