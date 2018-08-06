@@ -30,8 +30,8 @@ export default class Chat extends React.Component {
       ChatEngine: null
     }
     const ChatEngineSet = ChatEngineCore.create({
-      publishKey: `pub-c-83a7b3c8-f0d5-4ba0-896f-33ddf0a20466`,
-      subscribeKey: `sub-c-228d0636-98e6-11e8-b377-126307b646dc`
+      publishKey: `pub-c-f03e1a60-4057-431e-8411-c61429e2a216`,
+      subscribeKey: `sub-c-cefb12ce-9999-11e8-8f0f-6ef91e362860`
     });
     let me = ChatEngineSet.connect(store.getState().user.name.split(` `).join(`_`), {
       signedOnTime: now

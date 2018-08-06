@@ -11,9 +11,9 @@ export default function (uuid) {
     // publishKey: process.env.PUBNUB_PUB,
     // subscribeKey: process.env.PUBNUB_SUB,
     // secretKey: process.env.PUBNUB_SEC,
-    publishKey: `pub-c-ec5be6a2-71b1-44d5-829f-a8695b472e37`,
-    subscribeKey: `sub-c-ba1d6808-8ea8-11e8-bdf5-3621de398238`,
-    secretKey: `sec-c-YjhlMDJlYWMtM2FiNC00MDI5LTg4NDYtY2I0YmQ4YTllZjEz`,
+    publishKey: `pub-c-fe262c95-4798-4641-a6a0-cc38f79eb292`,
+    subscribeKey: `sub-c-89fbd816-9999-11e8-8f0f-6ef91e362860`,
+    secretKey: `sec-c-ZjkxY2U0YmItMjMwYS00YTFkLTg2ZGMtYWFiYmZiNTJhMThl`,
     ssl: true,
     uuid
     // }
