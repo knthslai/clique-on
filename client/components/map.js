@@ -32,7 +32,8 @@ class classMap extends Component {
           newPeople[message.UUID] = { entry: message, timetoken }
           // console.log(`newPeople`, newPeople);
           this.setState({
-            people: newPeople
+            people: newPeople,
+            hasPeople:true
           }
           )
         }
