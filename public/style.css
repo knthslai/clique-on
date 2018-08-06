@@ -93,7 +93,10 @@ h4 {
 }
 .Chat {
   position: fixed;
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.74);
+  padding: 10px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 #hideMe {
   -moz-animation: cssAnimation 0s ease-in 10s forwards;
@@ -119,10 +122,4 @@ h4 {
       height:0;
       visibility:hidden;
   }
-}
-.chat{
-  background-color: rgba(0, 0, 0, 0.74);
-  padding: 10px;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
 }

@@ -23,13 +23,17 @@ class classMap extends Component {
       activeMarker: {},
       people: [],
       selectedPerson: {},
+      hasPeople: false
     }
     this.props.user.pubnub.addListener({
-      message: ({ message }) => {
+      message: ({ message, timetoken }) => {
         if (message.UUID !== this.props.user.UUID) {
-          this.setState(prevState => ({
-            people: prevState.people.push(message)
-          }))
+          const newPeople = Object.assign({}, this.state.people)
+          newPeople[message.UUID] = { entry: message, timetoken }
+          this.setState({
+            people: newPeople
+          }
+          )
         }
       }
     })
@@ -69,6 +73,7 @@ class classMap extends Component {
       }
     })
     this.setState({
+      hasPeople: true,
       people: result
     })
     // dispatch(getHistory(result))
@@ -160,7 +165,7 @@ class classMap extends Component {
 
           {
 
-            this.state.people.length ? (
+            this.state.hasPeople ? (
               Object.keys(this.state.people).map(key => {
                 const person = this.state.people[key]
                 const { name, lat, lng } = this.state.people[key].entry
@@ -186,7 +191,12 @@ class classMap extends Component {
           </InfoWindow>
         </Map >
         <Menu vertical >
-          <Menu.Item style={{ backgroundColor: `white` }}>
+          <Menu.Item style={{
+            color: `white`,
+            backgroundColor: `rgba(0, 0, 0, 0.74)`,
+            padding: `10px`,
+            borderRadius: `15px`
+          }}>
             <Menu.Header>Recently Updated Locations</Menu.Header>
             <Menu.Menu >
               {
@@ -196,6 +206,9 @@ class classMap extends Component {
                     const { name, lat, lng } = this.state.people[key].entry
                     return (
                       <Menu.Item
+                        style={{
+                          color: `white`
+                        }}
                         key={person.timetoken}
                         name={name + ` - Updated: ` + timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
                         onClick={() => this.recenterMap({ lat, lng })}
@@ -205,7 +218,12 @@ class classMap extends Component {
             </Menu.Menu>
           </Menu.Item>
         </Menu>
-        <div className="Chat">
+        <div className="Chat" style={{
+
+          backgroundColor: `transparent`,
+          right: `0vw`,
+          top: `15vh`
+        }} >
           <Chat channel={this.props.channel} />
         </div>
       </React.Fragment >

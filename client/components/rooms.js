@@ -11,23 +11,11 @@ class Room extends React.Component {
     super()
     this.state = {
       room: chance.animal({ type: `pet` }) + `_Room`,
-      channels: null,
+      channels: store.getState().user.channels,
       channelBool: false
     }
   }
-  componentDidMount() {
-    if (this.state.channels) {
-      this.setState({
-        channelBool: true,
-        channels: store.getState().user.channels.reverse()
-      })
-    } else {
-      this.setState({
-        channels: store.getState().user.channels
-      })
-    }
 
-  }
   handleSubmit = (evt) => {
     evt.preventDefault()
     this.props.getChannels({ email: this.props.user.email || `guest`, userId: this.props.user.id, channel: `${this.state.room}___` + this.props.user.UUID })
@@ -38,6 +26,11 @@ class Room extends React.Component {
     this.setState({ room: evt.target.value })
   }
   render() {
+    if (!this.state.channelBool && this.state.channels !== null) {
+      this.setState({
+        channelBool: true
+      })
+    }
     return (
       <React.Fragment>
         <Form onSubmit={this.handleSubmit}>
@@ -59,9 +52,8 @@ class Room extends React.Component {
                         history.push(`/channel/${this.state.channels[0].split(` `).join(`_`)}`)
                       }
                       } />
-                      <Dropdown.Divider />
                       {
-                        this.state.channels.slice(1).map(channel => {
+                        this.state.channels.length > 1 ? this.state.channels.slice(1).map(channel => {
                           return (
                             <Dropdown.Item key={channel} text={channel.substring(0, channel.search(`___`))} onClick={(e) => {
                               console.log(e)
@@ -69,7 +61,7 @@ class Room extends React.Component {
                             }
                             } />
                           )
-                        })
+                        }) : null
                       }
                     </Dropdown.Menu>
                   </Dropdown>
@@ -83,4 +75,9 @@ class Room extends React.Component {
     )
   }
 }
-export default connect(state => ({ ...state }), dispatch => ({ getChannels: (payLoad) => dispatch(getChannels(payLoad)) }))(Room) 
+export default connect(
+  state => ({ ...state }),
+  dispatch => ({
+    getChannels: (payLoad) => dispatch(getChannels(payLoad))
+  })
+)(Room) 

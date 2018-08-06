@@ -2,7 +2,6 @@ import { GoogleApiWrapper } from 'google-maps-react';
 import React, { Component } from 'react';
 import ReactLoading from 'react-loading';
 import Map from './map';
-import { connect } from 'react-redux';
 
 const LoadingContainer = () => (
   <ReactLoading type="bars" color='white' height={667} width={375} />
@@ -27,7 +26,7 @@ class Container extends Component {
   }
 }
 
-export default connect((state => ({ ...state })))(GoogleApiWrapper({
+export default GoogleApiWrapper({
   apiKey: `AIzaSyD7ySe59IiWc8F1hX6eL9vrGQz45Nqcuko`, version: `3.32`,
   LoadingContainer: LoadingContainer
-})(Container))
+})(Container)

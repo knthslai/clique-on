@@ -54,18 +54,14 @@ const mapState = state => {
   }
 }
 
-const mapDispatch = dispatch => {
-  return {
-    loadInitialData() {
-
-      dispatch(me())
-    }
-  }
-}
 
 // The `withRouter` wrapper makes sure that updates are not blocked
 // when the url changes
-export default withRouter(connect(mapState, mapDispatch)(Routes))
+export default withRouter(connect(mapState, dispatch => ({
+  loadInitialData: async () => {
+    await dispatch(me())
+  }
+}))(Routes))
 
 /**
  * PROP TYPES

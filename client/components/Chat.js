@@ -14,6 +14,7 @@ export default class Chat extends React.Component {
   constructor() {
     super()
     this.state = {
+      name: store.getState().user.name,
       messages: [],
       chatInput: ``,
       chatReady: false,
@@ -53,8 +54,8 @@ export default class Chat extends React.Component {
 
   // send the message to the other users
   sendChat = () => {
-    if (this.state.chatInput && this.state.ChatEngine) {
-      this.currChannelChat.emit(`message`, {
+    if (this.state.chatInput && this.state.chatReady) {
+      this.state.ChatEngine.emit(`message`, {
         text: this.state.chatInput
       });
       this.setState({ chatInput: `` })
@@ -70,7 +71,6 @@ export default class Chat extends React.Component {
 
   // render the input field and send button
   render() {
-    console.log(this.state.messages)
     if (this.state.chatReady) {
       return (
         <div style={{
@@ -81,6 +81,7 @@ export default class Chat extends React.Component {
         }
         }>
           <h1>Chat: </h1>
+          <a style={{ color: `white` }}>Viewing as: <br />{this.state.name}</a>
           <div id="chat-output" >
             {
               this.state.messages.length ?
@@ -94,7 +95,7 @@ export default class Chat extends React.Component {
           </div> <input id="chat-input"
             type="text"
             name=""
-            value={this.state.chatInput} onChange={this.setChatInput} onKeyPress={() => this._handleKeyPress(this.state.ChatEngine)} />
+            value={this.state.chatInput} onChange={this.setChatInput} onKeyPress={this._handleKeyPress} />
           <button type="button"
             onClick={this.sendChat} value="Send Chat">-></button>
         </div >
