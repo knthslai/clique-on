@@ -171,9 +171,9 @@ class classMap extends Component {
                 const { name, lat, lng } = this.state.people[key].entry
                 return (
                   <Marker
-                    icon={`http://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
+                    icon={`https://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
                     key={person.timetoken}
-                    label={name[0].toUpperCase()}
+                    label={name}
                     name={name}
                     title={timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
                     position={{ lat: lat, lng: lng }}
