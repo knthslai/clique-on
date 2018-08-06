@@ -172,7 +172,6 @@ class classMap extends Component {
                 const { name, lat, lng } = this.state.people[key].entry
                 return (
                   <Marker
-                    icon={`http://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
                     key={person.timetoken}
                     animation="google.maps.Animation.DROP"
                     label={name[0].toUpperCase()}
