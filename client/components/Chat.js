@@ -80,8 +80,9 @@ export default class Chat extends React.Component {
           borderRadius: `15px`
         }
         }>
-          <h1>Chat: </h1>
+
           <a style={{ color: `white` }}>Viewing as: <br />{this.state.name}</a>
+          <h1>Chat: </h1>
           <div id="chat-output" >
             {
               this.state.messages.length ?
@@ -97,7 +98,7 @@ export default class Chat extends React.Component {
             name=""
             value={this.state.chatInput} onChange={this.setChatInput} onKeyPress={this._handleKeyPress} />
           <button type="button"
-            onClick={this.sendChat} value="Send Chat">-></button>
+            onClick={this.sendChat} value="Send Chat">send</button>
         </div >
       );
     } else {

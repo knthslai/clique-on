@@ -14,7 +14,7 @@ class AuthForm extends React.Component {
 
   render() {
     const { name, displayName, handleLogin, handleGuest, error } = this.props
-    let guestName = chance.state({ full: true }).concat(` `, chance.animal({ type: `zoo` }), ` `, chance.coin());
+    let guestName = chance.animal({ type: `pet` }) + `_` + chance.coin() + chance.hour({ twentyfour: true }) + chance.millisecond();
     return (
       <React.Fragment>
         <Form name={name} onSubmit={(e) => handleLogin(e, this.props.location.pathname)}>
