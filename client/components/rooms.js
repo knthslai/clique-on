@@ -9,8 +9,9 @@ const chance = new Chance();
 class Room extends React.Component {
   constructor() {
     super()
+    // console.log(`channels user user2`, store.getState())
     this.state = {
-      room: chance.animal({ type: `pet` }) + `_Room`,
+      room: chance.animal({ type: `pet` }) + `_Room` + chance.hour({ twentyfour: true }) + chance.millisecond(),
       channels: store.getState().user.channels,
       channelBool: false
     }
@@ -18,14 +19,15 @@ class Room extends React.Component {
 
   handleSubmit = (evt) => {
     evt.preventDefault()
-    this.props.getChannels({ email: this.props.user.email || `guest`, userId: this.props.user.id, channel: `${this.state.room}___` + this.props.user.UUID })
-    history.push(`/channel/${this.state.room}___` + this.props.user.UUID)
+    this.props.getChannels({ email: this.props.user.email || `guest`, userId: this.props.user.id, channel: this.state.room.split(` `).join(`_`) })
+    history.push(`/room/${this.state.room}`)
   }
 
   handleChange = (evt) => {
     this.setState({ room: evt.target.value })
   }
   render() {
+
     if (!this.state.channelBool && this.state.channels !== null) {
       this.setState({
         channelBool: true
@@ -39,7 +41,7 @@ class Room extends React.Component {
             <input type="text" name="roomName" value={this.state.room} onChange={this.handleChange} />
           </Form.Field>
           <Form.Field>
-            <Button type='submit'>Create Room</Button>
+            <button type='submit' className="ui inverted basic button">Create Room</button>
           </Form.Field>
           <Form.Field>
             {
@@ -48,16 +50,16 @@ class Room extends React.Component {
                   <label style={{ color: `white` }}><h3>Previous Rooms:</h3></label>
                   <Dropdown style={{ background: `white` }} text='Rooms'>
                     <Dropdown.Menu >
-                      <Dropdown.Item text={this.state.channels[0].substring(0, this.state.channels[0].search(`___`))} onClick={() => {
-                        history.push(`/channel/${this.state.channels[0].split(` `).join(`_`)}`)
+                      <Dropdown.Item text={this.state.channels[0]} onClick={() => {
+                        history.push(`/room/${this.state.channels[0]}`)
                       }
                       } />
                       {
                         this.state.channels.length > 1 ? this.state.channels.slice(1).map(channel => {
                           return (
-                            <Dropdown.Item key={channel} text={channel.substring(0, channel.search(`___`))} onClick={(e) => {
+                            <Dropdown.Item key={channel} text={channel} onClick={(e) => {
                               console.log(e)
-                              history.push(`/channel/${channel}`)
+                              history.push(`/room/${channel}`)
                             }
                             } />
                           )

@@ -3,6 +3,14 @@ import ChatEngineCore from 'chat-engine'
 import store from '../store/index';
 const now = new Date().getTime();
 import { Button } from 'semantic-ui-react';
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  WhatsappShareButton,
+  EmailShareButton, TwitterShareButton, RedditShareButton
+
+} from 'react-share';
+
 
 // class Message extends React.Component {
 //   render() {
@@ -78,11 +86,18 @@ export default class Chat extends React.Component {
           color: `white`,
           backgroundColor: `rgba(0, 0, 0, 0.74)`,
           padding: `10px`,
-          borderRadius: `15px`
+          borderBottomRightRadius: `15px`,
+          borderBottomLeftRadius: `15px`,
+          textAlign: `center`,
+          display: `flex`,
+          flexDirection: `column`
         }
         }>
 
-          <a style={{ color: `white` }}>Viewing Chatroom as: <br />{this.state.name}</a>
+          <span id="hideMe" style={{ color: `white` }}><h3 style={{ margin: `0px` }}>This Room:</h3>/room/{this.props.channel}
+            <br />Invite Others! <EmailShareButton url={this.props.channel} /><FacebookShareButton url={this.props.channel} /><LinkedinShareButton url={this.props.channel} /><TwitterShareButton url={this.props.channel} /><WhatsappShareButton url={this.props.channel} /><RedditShareButton url={this.props.channel} />
+
+            <h3 style={{ margin: `0px` }}>Username:</h3>{this.state.name}</span>
 
           <div id="chat-output" >
             {
@@ -90,19 +105,19 @@ export default class Chat extends React.Component {
                 this.state.messages.map((message, index) => {
                   let key = message.uuid + index
                   return (
-                    <div style={{ color: `white`, outline: `1px solid black`, backgrounColor: `rgba(101, 101, 101, 0.74)`, padding: `3px` }} key={key} id="hideMe"> {message.uuid}: {message.text === `0` ? null : message.text} </div>)
+                    <div style={{ color: `white`, backgroundColor: `rgba(101, 101, 101, 0.74)` }} key={key} id="hideMe"> {message.uuid}: {message.text === `0` ? null : message.text} </div>)
                 }) : null
             }
 
-          </div> <input id="chat-input"
+          </div> <div><input id="chat-input"
             type="text"
             name=""
             style={{ paddingRight: `5px` }}
             placeholder='Send a message'
             value={this.state.chatInput} onChange={this.setChatInput} onKeyPress={this._handleKeyPress} />
-          <Button className='ui inverted button' type="button"
-            style={{ marginTop: `13px` }}
-            onClick={this.sendChat} value="Send Chat">></Button>
+            <Button className='ui inverted button' type="button"
+              style={{ marginTop: `13px` }}
+              onClick={this.sendChat} value="Send Chat">></Button></div>
         </div >
       );
     } else {

@@ -11,11 +11,16 @@ const REMOVE_USER = `REMOVE_USER`
 const GUEST_USER = `GUEST_USER`
 const GET_HISTORY = `GET_HISTORY`
 const GET_CHANNELS = `GET_CHANNELS`
+const SET_LOCATION = `SET_LOCATION`
 /**
  * INITIAL STATE
  */
 const defaultUser = {
-  channels: []
+  channels: [],
+  location: {
+    lat: 40.758896,
+    lng: -73.985130
+  }
 }
 
 /**
@@ -26,6 +31,7 @@ const removeUser = session => ({ type: REMOVE_USER, session })
 const guestUserAct = guest => ({ type: GUEST_USER, guest })
 export const getHistory = historyInp => ({ type: GET_HISTORY, history: historyInp })
 const getChannelsAct = channels => ({ type: GET_CHANNELS, channels })
+export const setLocation = location => ({ type: SET_LOCATION, location })
 
 /**
  * THUNK CREATORS
@@ -91,12 +97,12 @@ export const guestUser = ({ guest, url }) => async dispatch => {
     dispatch(guestUserAct(payLoad))
     if (url) {
       history.push(url)
-      // } else {
-      //   history.push(`/createRoom`)
+    } else {
+      history.push(`/createRoom`)
     }
-    else {
-      history.push(`/channel/${data.session}`)
-    }
+    // else {
+    // history.push(`/room/${data.session}`)
+    // }
   } catch (err) {
     console.error(err)
   }
@@ -119,18 +125,23 @@ export const logout = () => async dispatch => {
  */
 export default function (state = defaultUser, action) {
   switch (action.type) {
+    case SET_LOCATION:
+      return { ...state, location: action.location }
     case GET_CHANNELS:
       return { ...state, channels: action.channels }
     case GUEST_USER:
-      return action.guest
+      return { ...action.guest, location: defaultUser.location }
     case GET_HISTORY:
       return { ...state, history: action.history }
     case GET_USER:
-      return action.user
+      if (typeof action.user === `string`) {
+        return action.user
+      } else {
+        return { ...state, ...action.user }
+      }
     case REMOVE_USER:
-      return action.session
+      return { session: action.session }
     default:
-
-      return { ...state, }
+      return state
   }
 }

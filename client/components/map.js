@@ -7,6 +7,8 @@ TimeAgo.locale(en)
 import { connect } from 'react-redux';
 import { Menu } from 'semantic-ui-react'
 import Chat from './Chat';
+import { setLocation } from '../store';
+import store from '../store/index';
 const timeAgo = new TimeAgo(`en-US`)
 const Chance = require(`chance`)
 const chance = new Chance();
@@ -15,10 +17,7 @@ class classMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentLocation: {
-        lat: 40.758896,
-        lng: -73.985130
-      },
+      nav: navigator.geolocation,
       showingInfoWindow: false,
       activeMarker: {},
       people: [],
@@ -29,7 +28,9 @@ class classMap extends Component {
       message: ({ message, timetoken }) => {
         if (message.UUID !== this.props.user.UUID) {
           const newPeople = Object.assign({}, this.state.people)
+          // console.log(`newPeople`, newPeople);
           newPeople[message.UUID] = { entry: message, timetoken }
+          // console.log(`newPeople`, newPeople);
           this.setState({
             people: newPeople
           }
@@ -44,9 +45,9 @@ class classMap extends Component {
   }
 
   componentDidMount = () => {
-
     this.getStateHistory()
     this.getCurrentLocation()
+    this.recenterMap(this.props.user.location)
   }
   getStateHistory = async () => {
     const result = {}
@@ -78,35 +79,33 @@ class classMap extends Component {
     })
     // dispatch(getHistory(result))
   }
+  componentWillUnmount() {
+    this.state.nav.clearWatch(this.state.nav)
+  }
   getCurrentLocation = () => {
-    if (this.props.centerAroundCurrentLocation) {
-      if (navigator && navigator.geolocation) {
-        navigator.geolocation.watchPosition((pos) => {
-          const latBool = Math.abs(pos.coords.latitude - this.state.currentLocation.lat) > 0.0001
-          // console.log(`lat - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
-          const lngBool = Math.abs(pos.coords.longitude - this.state.currentLocation.lng) > 0.0001
-          // console.log(`lng - coord difference:`, pos.coords.latitude - this.state.currentLocation.lat);
-          if (latBool || lngBool) {
-            this.setState({
-              currentLocation: {
-                lat: pos.coords.latitude,
-                lng: pos.coords.longitude
-              }
-            })
-            const user = { id: this.props.user.id, channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: pos.timestamp, UUID: this.props.user.UUID } }
-            this.props.user.pubnub.publish(user)
-          }
-        }, (e) => console.log(e), {
-            enableHighAccuracy: false,
-            maximumAge: 1000 * 60 * 2
-          })
-      }
+    if (navigator && this.state.nav) {
+      this.state.nav.watchPosition((pos) => {
+        const latBool = Math.abs(pos.coords.latitude - this.props.user.location.lat) > 0.0001
+        // console.log(`lat - coord difference:`, pos.coords.latitude - this.props.user.location.lat);
+        const lngBool = Math.abs(pos.coords.longitude - this.props.user.location.lng) > 0.0001
+        // console.log(`lng - coord difference:`, pos.coords.latitude - this.props.user.location.lat);
+        if (latBool || lngBool) {
+
+          this.props.setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+          const user = { id: this.props.user.id, channel: this.props.channel, message: { name: this.props.user.name, lat: pos.coords.latitude, lng: pos.coords.longitude, timetoken: pos.timestamp, UUID: this.props.user.UUID } }
+          this.props.user.pubnub.publish(user)
+        }
+      }, (e) => console.log(e), {
+          enableHighAccuracy: false,
+          maximumAge: 1000 * 60 * 2
+        })
+
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.currentLocation !== this.state.currentLocation) {
-      this.recenterMap(this.state.currentLocation)
+    if (prevState.currentLocation !== this.props.user.location) {
+      this.recenterMap(this.props.user.location)
     }
   }
 
@@ -158,7 +157,7 @@ class classMap extends Component {
         >
           <Marker
             animation="google.maps.Animation.DROP"
-            position={this.state.currentLocation}
+            position={this.props.user.location}
             onClick={this.onMarkerClick}
             label='You'
           />
@@ -168,6 +167,7 @@ class classMap extends Component {
             this.state.hasPeople ? (
               Object.keys(this.state.people).map(key => {
                 const person = this.state.people[key]
+                console.log(`person`, person);
                 const { name, lat, lng } = this.state.people[key].entry
                 return (
                   <Marker
@@ -195,7 +195,11 @@ class classMap extends Component {
             color: `white`,
             backgroundColor: `rgba(0, 0, 0, 0.74)`,
             padding: `10px`,
-            borderRadius: `15px`
+            borderTopLeftRadius: `15px`,
+            borderTopRightRadius: `15px`,
+            borderBottomRightRadius: `0px`,
+            borderBottomLeftRadius: `0px`,
+            width: `234px`
           }}>
             <Menu.Header>Recently Updated Locations</Menu.Header>
             <Menu.Menu >
@@ -207,7 +211,9 @@ class classMap extends Component {
                     return (
                       <Menu.Item
                         style={{
-                          color: `white`
+                          color: `white`,
+                          borderTop: `1px dashed white`,
+                          borderBottom: `1px dashed white`
                         }}
                         key={person.timetoken}
                         name={name + `   ~ Updated: ` + timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
@@ -242,4 +248,4 @@ classMap.defaultProps = {
   centerAroundCurrentLocation: true
 }
 
-export default connect(state => ({ ...state }))(classMap);
+export default connect(state => ({ ...state }), dispatch => ({ setLocation: (location) => dispatch(setLocation(location)) }))(classMap);

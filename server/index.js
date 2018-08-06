@@ -88,7 +88,7 @@ const createApp = () => {
   //     res.redirect(`/`);
   //   }
   // }
-  // app.get(`/channel/*`, checkPermissions, function (req, res, next) { next() })
+  // app.get(`/room/*`, checkPermissions, function (req, res, next) { next() })
   // app.get(`/createRoom`, checkPermissions, function (req, res, next) { next() })
   // app.get(`/public*`, checkPermissions, function (req, res, next) { next() })
 

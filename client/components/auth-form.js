@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import store, { auth, guestUser } from '../store'
 import { Link } from 'react-router-dom';
 import { Button, Form } from 'semantic-ui-react'
+import history from '../history';
 const Chance = require(`chance`)
 const chance = new Chance();
 
@@ -11,39 +12,43 @@ const chance = new Chance();
  * COMPONENT
  */
 class AuthForm extends React.Component {
+  // componentDidMount() {
+  //   if ()
+  // }
 
   render() {
     const { name, displayName, handleLogin, handleGuest, error } = this.props
     let guestName = chance.animal({ type: `pet` }) + `_` + chance.coin() + chance.hour({ twentyfour: true }) + chance.millisecond();
-    guestName.split(` `).join(`_`)
+
     return (
       <React.Fragment>
         <Form name={name} onSubmit={(e) => handleLogin(e, this.props.location.pathname)}>
-          <Form.Field>
-            <label style={{ color: `white` }}><h3>Guest Access as:</h3></label>
-            <Button type='button' name='guest' onClick={(e) => handleGuest(e, guestName, this.props.location.pathname)}>{guestName}</Button>
+          <Form.Field style={{ marginBottom: `0px` }}>
+            <button className="ui inverted basic button" type='button' name='guest' onClick={(e) => handleGuest(e, guestName, this.props.location.pathname)}>Guest Access</button>
           </Form.Field>
           <Form.Field>
-            <label style={{ color: `white` }}><h3>{name.charAt(0).toUpperCase() + name.slice(1)}</h3></label>
+            {
+              name === `signup` && <Form.Field><label style={{ color: `white` }}>Username</label><input name="userName" placeholder='Username' /></Form.Field>
+            }
+
           </Form.Field>
-          <Form.Field style={{ textAlign: `center` }}>
-            {name === `login` ? (<Link to="/signup" style={{ color: `white`, background: `black`, borderRadius: `15px`, padding: `5px`, border: `1px solid white` }}>or ... Sign Up</Link>) : (<Link style={{ background: `black`, color: `white`, borderRadius: `15px`, padding: `5px`, border: `1px solid white` }} to="/login">or ... Login</Link>)}
-          </Form.Field>
-          {
-            name === `signup` && <Form.Field><label style={{ color: `white` }}>Username</label><input name="userName" placeholder='Username' /></Form.Field>
-          }
+          {/* <Form.Field style={{ textAlign: `center` }}>
+          
+          </Form.Field> */}
+
           <Form.Field>
+            <h1 style={{ margin: `0px`, border: `0px` }} />
             <label style={{ color: `white` }}>Email</label>
             <input name="email" placeholder='you@mail.com' />
           </Form.Field>
           <Form.Field>
             <label style={{ color: `white` }}>Password</label>
-            <input name="password" type="password" placeholder='Last Name' />
+            <input name="password" type="password" placeholder='Password' />
           </Form.Field>
           <Form.Field>
-            <Button type='submit'>{displayName}</Button>
+            <button className="ui inverted basic button" type='submit'>{displayName}</button>
+            {name === `login` ? (<button type="button" className="ui inverted basic button" onClick={() => history.push(`/signup`)}>or ... Sign Up</button>) : (<button type="button" className="ui inverted basic button" onClick={() => history.push(`/login`)}>or ... Login</button>)}
             {error && error.response && <div> {error.response.data} </div>}
-            {/* <a href="/auth/GitHub" style={{ color: `white` }}>{displayName} with GitHub</a> */}
           </Form.Field>
         </Form >
 
@@ -79,14 +84,19 @@ const mapSignup = state => {
 const mapDispatch = dispatch => {
   return {
     handleGuest(evt, name, urlFromForm) {
-
       evt.preventDefault()
-      const session = store.getState().user
+      const user = store.getState().user
+      console.log(`user`, user);
+      let session
+      if (user.session === undefined) {
+        session = user
+      } else {
+        session = user.session
+      }
+      console.log(`session`, session)
       const guest = { name, session }
       const payLoad = { guest }
-
       if (urlFromForm.search(`channel/`) > 0) {
-
         payLoad.url = urlFromForm
       }
       dispatch(guestUser(payLoad))

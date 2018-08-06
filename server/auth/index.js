@@ -63,7 +63,7 @@ router.get(`/me`, (req, res) => {
   if (req.user) {
     res.json(req.user)
   } else {
-    req.login(req.sessionID, err => (err ? next(err) : res.json(req.sessionID)))
+    req.login(req.sessionID, err => (err ? console.error(err) : res.json(req.sessionID)))
   }
 })
 // -> /auth/session
