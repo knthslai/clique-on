@@ -94,7 +94,7 @@ const mapDispatch = dispatch => {
       }
       const guest = { name, session }
       const payLoad = { guest }
-      if (urlFromForm.search(`channel/`) > 0) {
+      if (urlFromForm.search(`room/`) > 0) {
         payLoad.url = urlFromForm
       }
       dispatch(guestUser(payLoad))
@@ -108,7 +108,7 @@ const mapDispatch = dispatch => {
       if (evt.target.userName) {
         payLoad.name = evt.target.userName.value
       }
-      if (url.search(`channel/`)) {
+      if (url.search(`room/`)) {
         payLoad.currUrl = url
       }
       dispatch(auth(payLoad))
