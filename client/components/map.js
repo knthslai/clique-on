@@ -21,14 +21,14 @@ class classMap extends Component {
       },
       showingInfoWindow: false,
       activeMarker: {},
-      people: null,
+      people: [],
       selectedPerson: {},
     }
     this.props.user.pubnub.addListener({
       message: ({ message }) => {
         if (message.UUID !== this.props.user.UUID) {
           this.setState(prevState => ({
-            people: [...prevState.people, message]
+            people: prevState.people.push(message)
           }))
         }
       }
@@ -160,7 +160,7 @@ class classMap extends Component {
 
           {
 
-            this.state.people && (
+            this.state.people.length ? (
               Object.keys(this.state.people).map(key => {
                 const person = this.state.people[key]
                 const { name, lat, lng } = this.state.people[key].entry
@@ -175,7 +175,8 @@ class classMap extends Component {
                     position={{ lat: lat, lng: lng }}
                     onClick={this.onMarkerClick} />
                 )
-              }))}
+              })) : <div />
+          }
           < InfoWindow
             marker={this.state.activeMarker}
             visible={this.state.showingInfoWindow}>
