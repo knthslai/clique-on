@@ -32,8 +32,7 @@ class classMap extends Component {
           newPeople[message.UUID] = { entry: message, timetoken }
           // console.log(`newPeople`, newPeople);
           this.setState({
-            people: newPeople,
-            hasPeople:true
+            people: newPeople
           }
           )
         }
@@ -75,7 +74,6 @@ class classMap extends Component {
       }
     })
     this.setState({
-      hasPeople: true,
       people: result
     })
     // dispatch(getHistory(result))
@@ -147,6 +145,7 @@ class classMap extends Component {
     return colors[index]
   }
   render() {
+    console.log(`hasPeople`, this.state.hasPeople)
     return (
       <React.Fragment>
         <Map
@@ -165,15 +164,15 @@ class classMap extends Component {
 
           {
 
-            this.state.hasPeople ? (
+            this.state.people ? (
               Object.keys(this.state.people).map(key => {
                 const person = this.state.people[key]
                 console.log(`person`, person);
                 const { name, lat, lng } = this.state.people[key].entry
                 return (
                   <Marker
+                    icon={`http://maps.google.com/mapfiles/ms/icons/${this.returnColor()}-dot.png`}
                     key={person.timetoken}
-                    animation="google.maps.Animation.DROP"
                     label={name[0].toUpperCase()}
                     name={name}
                     title={timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
