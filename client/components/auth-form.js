@@ -86,14 +86,12 @@ const mapDispatch = dispatch => {
     handleGuest(evt, name, urlFromForm) {
       evt.preventDefault()
       const user = store.getState().user
-      console.log(`user`, user);
       let session
       if (user.session === undefined) {
         session = user
       } else {
         session = user.session
       }
-      console.log(`session`, session)
       const guest = { name, session }
       const payLoad = { guest }
       if (urlFromForm.search(`channel/`) > 0) {
