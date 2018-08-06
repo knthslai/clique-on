@@ -221,8 +221,8 @@ class classMap extends Component {
         <div className="Chat" style={{
 
           backgroundColor: `transparent`,
-          right: `0vw`,
-          top: `15vh`
+          // right: `0vw`,
+          // top: `15vh`
         }} >
           <Chat channel={this.props.channel} />
         </div>
