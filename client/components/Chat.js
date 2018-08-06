@@ -2,6 +2,7 @@ import React from 'react';
 import ChatEngineCore from 'chat-engine'
 import store from '../store/index';
 const now = new Date().getTime();
+import { Button } from 'semantic-ui-react';
 
 // class Message extends React.Component {
 //   render() {
@@ -81,8 +82,8 @@ export default class Chat extends React.Component {
         }
         }>
 
-          <a style={{ color: `white` }}>Viewing as: <br />{this.state.name}</a>
-          <h1>Chat: </h1>
+          <a style={{ color: `white` }}>Viewing Chatroom as: <br />{this.state.name}</a>
+
           <div id="chat-output" >
             {
               this.state.messages.length ?
@@ -96,9 +97,12 @@ export default class Chat extends React.Component {
           </div> <input id="chat-input"
             type="text"
             name=""
+            style={{ paddingRight: `5px` }}
+            placeholder='Send a message'
             value={this.state.chatInput} onChange={this.setChatInput} onKeyPress={this._handleKeyPress} />
-          <button type="button"
-            onClick={this.sendChat} value="Send Chat">send</button>
+          <Button className='ui inverted button' type="button"
+            style={{ marginTop: `13px` }}
+            onClick={this.sendChat} value="Send Chat">></Button>
         </div >
       );
     } else {

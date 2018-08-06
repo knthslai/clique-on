@@ -210,22 +210,17 @@ class classMap extends Component {
                           color: `white`
                         }}
                         key={person.timetoken}
-                        name={name + ` - Updated: ` + timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
+                        name={name + `   ~ Updated: ` + timeAgo.format(Number(person.timetoken.toString().substring(0, 13)))}
                         onClick={() => this.recenterMap({ lat, lng })}
                       />)
                   }))
               }
+              <div className="Chat" style={{ backgroundColor: `transparent` }} >
+                <Chat channel={this.props.channel} />
+              </div>
             </Menu.Menu>
           </Menu.Item>
         </Menu>
-        <div className="Chat" style={{
-
-          backgroundColor: `transparent`,
-          // right: `0vw`,
-          // top: `15vh`
-        }} >
-          <Chat channel={this.props.channel} />
-        </div>
       </React.Fragment >
     );
   }

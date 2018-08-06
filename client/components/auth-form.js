@@ -15,18 +15,19 @@ class AuthForm extends React.Component {
   render() {
     const { name, displayName, handleLogin, handleGuest, error } = this.props
     let guestName = chance.animal({ type: `pet` }) + `_` + chance.coin() + chance.hour({ twentyfour: true }) + chance.millisecond();
+    guestName.split(` `).join(`_`)
     return (
       <React.Fragment>
         <Form name={name} onSubmit={(e) => handleLogin(e, this.props.location.pathname)}>
           <Form.Field>
-            <label style={{ color: `white` }}><h3>Guest Access</h3></label>
+            <label style={{ color: `white` }}><h3>Guest Access as:</h3></label>
             <Button type='button' name='guest' onClick={(e) => handleGuest(e, guestName, this.props.location.pathname)}>{guestName}</Button>
           </Form.Field>
           <Form.Field>
             <label style={{ color: `white` }}><h3>{name.charAt(0).toUpperCase() + name.slice(1)}</h3></label>
           </Form.Field>
           <Form.Field style={{ textAlign: `center` }}>
-            {name === `login` ? (<Link to="/signup" style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }}>or ... Sign Up</Link>) : (<Link style={{ background: `black`, borderBottom: `1px dashed white`, padding: `5px` }} to="/login">or ... Login</Link>)}
+            {name === `login` ? (<Link to="/signup" style={{ color: `white`, background: `black`, borderRadius: `15px`, padding: `5px`, border: `1px solid white` }}>or ... Sign Up</Link>) : (<Link style={{ background: `black`, color: `white`, borderRadius: `15px`, padding: `5px`, border: `1px solid white` }} to="/login">or ... Login</Link>)}
           </Form.Field>
           {
             name === `signup` && <Form.Field><label style={{ color: `white` }}>Username</label><input name="userName" placeholder='Username' /></Form.Field>

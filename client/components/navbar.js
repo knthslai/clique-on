@@ -15,7 +15,7 @@ class Navbar extends React.Component {
     const { handleClick, isLoggedIn } = this.props
     return (
       <div>
-        <h1 onClick={() => history.push(`/`)} style={{ color: `white` }}>Clique-On   </h1>
+        <h1 onClick={() => history.push(`/`)} style={{ color: `white`, fontSize: `42px` }}>Clique-On   </h1>
         {isLoggedIn ? (<React.Fragment>
           <button type='submit' name='rooms' style={{ alignSelf: `center`, color: `white`, background: `black`, borderRadius: `15px`, border: `1px solid white`, marginBottom: `15px`, marginLeft: `20px` }} onClick={handleClick}>Rooms</button>
           <button type='submit' name='logout' style={{ alignSelf: `center`, color: `white`, background: `black`, borderRadius: `15px`, border: `1px solid white`, marginBottom: `15px`, marginLeft: `20px` }} onClick={handleClick}>Logout</button> </React.Fragment>) : null}
